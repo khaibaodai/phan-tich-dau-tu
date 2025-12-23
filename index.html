@@ -3,83 +3,116 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Công cụ Phân tích Đầu tư Bất động sản</title>
+    <title>Công cụ Phân tích Đầu tư Bất động sản - Vũ Trọng Khải</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.0/dist/chart.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f8f9fa;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: #333;
             min-height: 100vh;
         }
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
         }
         .shadow-custom {
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        .header-banner {
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+        .header-banner img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
         }
         .tab {
             cursor: pointer;
             transition: all 0.3s;
+            border-radius: 10px 10px 0 0;
         }
         .tab.active {
-            background-color: #4f46e5;
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
             color: white;
+            transform: translateY(-3px);
         }
         .tab-content {
             display: none;
         }
         .tab-content.active {
             display: block;
+            animation: fadeIn 0.5s;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         .form-group {
             margin-bottom: 1rem;
         }
-        input[type="number"], input[type="text"] {
+        input[type="number"], input[type="text"], select, textarea {
             width: 100%;
-            padding: 0.5rem;
-            border: 1px solid #ccc;
-            border-radius: 4px;
+            padding: 0.75rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #4f46e5;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
         }
         .btn {
             transition: all 0.3s;
-        }
-        .highlight {
-            background-color: #fdf2d0;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        th, td {
-            padding: 0.75rem;
-            text-align: left;
-            border-bottom: 1px solid #e2e8f0;
-        }
-        th {
-            background-color: #f8fafc;
+            border-radius: 10px;
+            padding: 0.75rem 2rem;
             font-weight: 600;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
         }
-        .best-value {
-            background-color: #d1fae5;
-            font-weight: bold;
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
         }
-        .input-group {
-            display: flex;
-            align-items: center;
+        .info-box {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            border-left: 5px solid #3b82f6;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1rem 0;
         }
-        .input-group-text {
-            padding: 0.5rem;
-            background-color: #f1f5f9;
-            border: 1px solid #ccc;
-            border-left: none;
-            border-radius: 0 4px 4px 0;
-            color: #64748b;
+        .scenario-card {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s;
+            border: 2px solid transparent;
         }
-        .input-with-suffix {
-            border-right: none !important;
-            border-radius: 4px 0 0 4px !important;
+        .scenario-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            border-color: #4f46e5;
+        }
+        .chart-container {
+            position: relative;
+            height: 400px;
+            margin: 2rem 0;
+        }
+        .knowledge-section {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border-radius: 15px;
+            padding: 2rem;
+            margin: 2rem 0;
+            border-left: 5px solid #f59e0b;
         }
         .tooltip {
             position: relative;
@@ -89,577 +122,908 @@
         }
         .tooltip .tooltip-text {
             visibility: hidden;
-            width: 200px;
-            background-color: #333;
+            width: 250px;
+            background-color: #1e293b;
             color: white;
-            text-align: center;
-            padding: 5px;
-            border-radius: 6px;
+            text-align: left;
+            padding: 10px;
+            border-radius: 8px;
             position: absolute;
-            z-index: 1;
+            z-index: 1000;
             bottom: 125%;
             left: 50%;
-            margin-left: -100px;
+            margin-left: -125px;
             opacity: 0;
             transition: opacity 0.3s;
+            font-size: 0.875rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
         }
         .tooltip:hover .tooltip-text {
             visibility: visible;
             opacity: 1;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        th {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            font-weight: 600;
+            color: #1e293b;
+        }
+        .best-value {
+            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+            font-weight: bold;
+        }
+        .slider-container {
+            margin: 1.5rem 0;
+        }
+        .slider {
+            width: 100%;
+            height: 8px;
+            border-radius: 5px;
+            outline: none;
+            -webkit-appearance: none;
+            background: linear-gradient(to right, #4f46e5 0%, #7c3aed 100%);
+        }
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #4f46e5;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+        }
+        .slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #4f46e5;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+        }
+        .footer-contact {
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 15px;
+            margin-top: 3rem;
+            text-align: center;
+        }
+        .image-preview {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: 10px;
+            margin-top: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+        .upload-area {
+            border: 2px dashed #4f46e5;
+            border-radius: 10px;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .upload-area:hover {
+            background: #f0f9ff;
+            border-color: #3b82f6;
+        }
+        .score-badge {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+        .score-excellent { background: #10b981; color: white; }
+        .score-good { background: #3b82f6; color: white; }
+        .score-fair { background: #f59e0b; color: white; }
+        .score-poor { background: #ef4444; color: white; }
+        .recommendation-box {
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+            border-left: 5px solid #2563eb;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1rem 0;
         }
         @media print {
             .no-print {
                 display: none !important;
             }
             body {
-                background-color: white;
+                background: white;
             }
-            .container {
-                max-width: 100%;
-                margin: 0;
-                padding: 0;
-            }
+        }
+        .priority-checkbox {
+            margin-right: 0.5rem;
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
         }
     </style>
 </head>
 <body class="py-8">
     <div class="container mx-auto px-4">
-        <h1 class="text-3xl font-bold text-center text-indigo-700 mb-8">Công cụ Phân tích Đầu tư Bất động sản</h1>
-        
+        <!-- Header Banner -->
+        <div class="header-banner text-center">
+            <img src="https://sf-static.upanhlaylink.com/img/image_202512236745cd894d09643f4fde4935cf4c6379.jpg" alt="Vũ Trọng Khải - Premium Real Estate" class="mx-auto mb-4" style="max-width: 600px;">
+            <h1 class="text-4xl font-bold mb-2">Công cụ Phân tích Đầu tư Bất động sản</h1>
+            <p class="text-xl">Phân tích Chuyên nghiệp - Đầu tư Thông minh</p>
+        </div>
+
         <!-- Tabs navigation -->
-        <div class="flex flex-wrap mb-6 no-print">
-            <div class="tab active px-4 py-2 rounded-t-lg bg-indigo-100 mr-2 mb-2" data-tab="general">
-                <i class="fas fa-home mr-1"></i> Thông tin chung
+        <div class="flex flex-wrap mb-6 no-print gap-2">
+            <div class="tab active px-6 py-3 bg-indigo-100" data-tab="general">
+                <i class="fas fa-home mr-2"></i> Thông tin chung
             </div>
-            <div class="tab px-4 py-2 rounded-t-lg bg-gray-200 mr-2 mb-2" data-tab="project1">
-                <i class="fas fa-building mr-1"></i> Dự án 1
+            <div class="tab px-6 py-3 bg-gray-200" data-tab="loan">
+                <i class="fas fa-university mr-2"></i> Tư vấn Vay
             </div>
-            <div class="tab px-4 py-2 rounded-t-lg bg-gray-200 mr-2 mb-2" data-tab="project2">
-                <i class="fas fa-building mr-1"></i> Dự án 2
+            <div class="tab px-6 py-3 bg-gray-200" data-tab="project1">
+                <i class="fas fa-building mr-2"></i> Dự án 1
             </div>
-            <div class="tab px-4 py-2 rounded-t-lg bg-gray-200 mr-2 mb-2" data-tab="project3">
-                <i class="fas fa-building mr-1"></i> Dự án 3
+            <div class="tab px-6 py-3 bg-gray-200" data-tab="project2">
+                <i class="fas fa-building mr-2"></i> Dự án 2
             </div>
-            <div class="tab px-4 py-2 rounded-t-lg bg-gray-200 mr-2 mb-2" data-tab="results">
-                <i class="fas fa-chart-bar mr-1"></i> Kết quả
+            <div class="tab px-6 py-3 bg-gray-200" data-tab="project3">
+                <i class="fas fa-building mr-2"></i> Dự án 3
+            </div>
+            <div class="tab px-6 py-3 bg-gray-200" data-tab="comparison">
+                <i class="fas fa-balance-scale-left mr-2"></i> So sánh Đầu tư
+            </div>
+            <div class="tab px-6 py-3 bg-gray-200" data-tab="scenarios">
+                <i class="fas fa-route mr-2"></i> So sánh Kịch bản
+            </div>
+            <div class="tab px-6 py-3 bg-gray-200" data-tab="simulation">
+                <i class="fas fa-sliders-h mr-2"></i> Mô phỏng Tương tác
+            </div>
+            <div class="tab px-6 py-3 bg-gray-200" data-tab="results">
+                <i class="fas fa-chart-bar mr-2"></i> Kết quả
             </div>
         </div>
 
         <!-- Tab contents -->
-        <div id="tab-container" class="bg-white p-6 rounded-lg shadow-custom mb-8">
+        <div id="tab-container" class="bg-white p-8 rounded-lg shadow-custom mb-8">
             <!-- General Info Tab -->
             <div class="tab-content active" id="general-tab">
-                <h2 class="text-2xl font-semibold text-indigo-700 mb-6">Thông tin Tài chính Cá nhân & Giả định Thị trường</h2>
+                <h2 class="text-3xl font-semibold text-indigo-700 mb-6">Thông tin Tài chính & Giả định Thị trường</h2>
                 
-                <div class="bg-indigo-50 p-4 rounded-lg mb-6">
-                    <h3 class="text-xl font-semibold mb-4">Thông tin Tài chính Cá nhân</h3>
+                <div class="info-box">
+                    <h3 class="text-xl font-semibold mb-4"><i class="fas fa-wallet mr-2"></i>Thông tin Tài chính Cá nhân</h3>
                     <div class="grid md:grid-cols-3 gap-4">
                         <div class="form-group">
-                            <label class="block mb-2">Tổng ngân sách đầu tư dự kiến (tỷ VNĐ)
+                            <label class="block mb-2 font-semibold">Tổng ngân sách đầu tư (tỷ VNĐ)
                                 <div class="tooltip">
-                                    <i class="fas fa-info-circle"></i>
-                                    <span class="tooltip-text">Tổng số tiền bạn dự định đầu tư</span>
+                                    <i class="fas fa-info-circle text-blue-500"></i>
+                                    <span class="tooltip-text">Tổng số tiền bạn dự định đầu tư vào bất động sản</span>
                                 </div>
                             </label>
-                            <div class="input-group">
-                                <input type="number" id="total-budget" class="input-with-suffix" step="0.1" min="0">
-                                <span class="input-group-text">tỷ</span>
-                            </div>
+                            <input type="number" id="total-budget" step="0.1" min="0" placeholder="Ví dụ: 5.5">
                         </div>
                         <div class="form-group">
-                            <label class="block mb-2">Vốn tự có (tỷ VNĐ)
+                            <label class="block mb-2 font-semibold">Vốn tự có (tỷ VNĐ)
                                 <div class="tooltip">
-                                    <i class="fas fa-info-circle"></i>
-                                    <span class="tooltip-text">Số tiền bạn có sẵn để đầu tư</span>
+                                    <i class="fas fa-info-circle text-blue-500"></i>
+                                    <span class="tooltip-text">Số tiền bạn có sẵn để đầu tư không cần vay</span>
                                 </div>
                             </label>
-                            <div class="input-group">
-                                <input type="number" id="own-capital" class="input-with-suffix" step="0.1" min="0">
-                                <span class="input-group-text">tỷ</span>
-                            </div>
+                            <input type="number" id="own-capital" step="0.1" min="0" placeholder="Ví dụ: 2.0">
                         </div>
                         <div class="form-group">
-                            <label class="block mb-2">Vốn từ gia đình/bạn bè (tỷ VNĐ)
-                                <div class="tooltip">
-                                    <i class="fas fa-info-circle"></i>
-                                    <span class="tooltip-text">Số tiền bạn được vay từ gia đình hoặc bạn bè</span>
-                                </div>
-                            </label>
-                            <div class="input-group">
-                                <input type="number" id="family-capital" class="input-with-suffix" step="0.1" min="0" value="0">
-                                <span class="input-group-text">tỷ</span>
-                            </div>
+                            <label class="block mb-2 font-semibold">Vốn từ gia đình/bạn bè (tỷ VNĐ)</label>
+                            <input type="number" id="family-capital" step="0.1" min="0" value="0" placeholder="Ví dụ: 0.5">
                         </div>
                     </div>
-                    <div class="mt-4">
-                        <label class="block font-medium">Số tiền dự kiến vay (tỷ VNĐ)</label>
-                        <div class="p-2 bg-gray-100 rounded mt-1">
-                            <span id="loan-amount" class="font-bold">0</span> tỷ VNĐ
+                    <div class="mt-4 p-4 bg-white rounded-lg">
+                        <label class="block font-bold text-lg">Số tiền cần vay:</label>
+                        <div class="text-3xl font-bold text-indigo-600 mt-2">
+                            <span id="loan-amount">0</span> tỷ VNĐ
                         </div>
                     </div>
                 </div>
                 
-                <div class="bg-blue-50 p-4 rounded-lg mb-6">
-                    <h3 class="text-xl font-semibold mb-4">Thông số Khoản vay (nếu có vay)</h3>
+                <div class="info-box" style="background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);">
+                    <h3 class="text-xl font-semibold mb-4"><i class="fas fa-chart-line mr-2"></i>Kế hoạch Đầu tư & Giả định</h3>
                     <div class="grid md:grid-cols-3 gap-4">
                         <div class="form-group">
-                            <label class="block mb-2">Lãi suất vay cố định ban đầu (%/năm)
+                            <label class="block mb-2 font-semibold">Thời gian nắm giữ (năm)
                                 <div class="tooltip">
-                                    <i class="fas fa-info-circle"></i>
-                                    <span class="tooltip-text">Lãi suất cố định trong thời gian đầu của khoản vay</span>
+                                    <i class="fas fa-info-circle text-blue-500"></i>
+                                    <span class="tooltip-text">Thời gian bạn dự định giữ BĐS trước khi bán</span>
                                 </div>
                             </label>
-                            <div class="input-group">
-                                <input type="number" id="fixed-interest-rate" class="input-with-suffix" step="0.1" min="0">
-                                <span class="input-group-text">%</span>
-                            </div>
+                            <input type="number" id="holding-period" min="1" value="5" placeholder="Ví dụ: 5">
                         </div>
                         <div class="form-group">
-                            <label class="block mb-2">Thời gian cố định lãi suất (năm)
+                            <label class="block mb-2 font-semibold">Lãi suất chiết khấu NPV (%/năm)
                                 <div class="tooltip">
-                                    <i class="fas fa-info-circle"></i>
-                                    <span class="tooltip-text">Số năm áp dụng lãi suất cố định ban đầu</span>
+                                    <i class="fas fa-info-circle text-blue-500"></i>
+                                    <span class="tooltip-text">Tỷ lệ sinh lời tối thiểu mong muốn. Xem phần "Kiến thức Cơ bản" bên dưới</span>
                                 </div>
                             </label>
-                            <div class="input-group">
-                                <input type="number" id="fixed-interest-period" class="input-with-suffix" min="0">
-                                <span class="input-group-text">năm</span>
-                            </div>
+                            <input type="number" id="discount-rate" step="0.1" min="0" value="12" placeholder="Ví dụ: 12">
                         </div>
                         <div class="form-group">
-                            <label class="block mb-2">Lãi suất vay dự kiến sau thời gian cố định (%/năm)
+                            <label class="block mb-2 font-semibold">Chi phí bán lại (% giá bán)
                                 <div class="tooltip">
-                                    <i class="fas fa-info-circle"></i>
-                                    <span class="tooltip-text">Lãi suất dự kiến sau khi hết thời gian cố định, có thể là một khoảng</span>
+                                    <i class="fas fa-info-circle text-blue-500"></i>
+                                    <span class="tooltip-text">Phí môi giới + thuế TNCN khi bán (thường 2-3%)</span>
                                 </div>
                             </label>
-                            <div class="input-group">
-                                <input type="number" id="variable-interest-rate" class="input-with-suffix" step="0.1" min="0">
-                                <span class="input-group-text">%</span>
-                            </div>
+                            <input type="number" id="selling-costs" step="0.1" min="0" value="2" placeholder="Ví dụ: 2">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Loan Consultation Tab -->
+            <div class="tab-content" id="loan-tab">
+                <h2 class="text-3xl font-semibold text-indigo-700 mb-6"><i class="fas fa-university mr-3"></i>Tư vấn Vay Ngân hàng</h2>
+                
+                <div class="info-box">
+                    <h3 class="text-xl font-semibold mb-4">Thông số Khoản vay</h3>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="form-group">
+                            <label class="block mb-2 font-semibold">Lãi suất cố định mua nhà (%/năm)
+                                <div class="tooltip">
+                                    <i class="fas fa-info-circle text-blue-500"></i>
+                                    <span class="tooltip-text">Lãi suất cố định áp dụng trong toàn bộ thời hạn vay</span>
+                                </div>
+                            </label>
+                            <input type="number" id="fixed-loan-rate" step="0.1" min="0" value="8.5" placeholder="Ví dụ: 8.5">
                         </div>
                         <div class="form-group">
-                            <label class="block mb-2">Thời hạn vay (năm)
+                            <label class="block mb-2 font-semibold">Thời hạn vay (năm)
                                 <div class="tooltip">
-                                    <i class="fas fa-info-circle"></i>
-                                    <span class="tooltip-text">Tổng thời gian vay</span>
+                                    <i class="fas fa-info-circle text-blue-500"></i>
+                                    <span class="tooltip-text">Thời hạn vay tối đa 30 năm để số tiền trả hàng tháng nhỏ nhất</span>
                                 </div>
                             </label>
-                            <div class="input-group">
-                                <input type="number" id="loan-term" class="input-with-suffix" min="0">
-                                <span class="input-group-text">năm</span>
+                            <input type="number" id="loan-term-input" min="1" max="30" value="30" placeholder="Tối đa 30 năm">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="scenario-card">
+                    <h3 class="text-2xl font-bold mb-6 text-center text-indigo-700">
+                        <i class="fas fa-calculator mr-2"></i>So sánh Lãi suất & Trả góp Ngân hàng
+                    </h3>
+                    
+                    <div id="bank-comparison-results" class="space-y-4">
+                        <!-- Bank comparison will be populated here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Project Tabs (1, 2, 3) - Similar structure for each -->
+            <div class="tab-content" id="project1-tab">
+                <h2 class="text-3xl font-semibold text-indigo-700 mb-6">Dự án 1</h2>
+                
+                <!-- Upload Image Section -->
+                <div class="scenario-card mb-6">
+                    <h3 class="text-xl font-semibold mb-4"><i class="fas fa-image mr-2"></i>Hình ảnh Dự án</h3>
+                    <div class="upload-area" onclick="document.getElementById('project1-image-input').click()">
+                        <i class="fas fa-cloud-upload-alt text-5xl text-indigo-500 mb-3"></i>
+                        <p class="text-lg">Nhấn để tải ảnh dự án lên</p>
+                        <p class="text-sm text-gray-500">Định dạng: JPG, PNG (Tối đa 5MB)</p>
+                        <input type="file" id="project1-image-input" accept="image/*" style="display: none;" onchange="previewImage('project1')">
+                    </div>
+                    <div id="project1-image-preview" class="mt-4 text-center"></div>
+                </div>
+
+                <div class="space-y-6">
+                    <div class="info-box">
+                        <h3 class="text-xl font-semibold mb-4">Thông tin Cơ bản</h3>
+                        <div class="grid md:grid-cols-3 gap-4">
+                            <div class="form-group md:col-span-3">
+                                <label class="block mb-2 font-semibold">Tên dự án</label>
+                                <input type="text" id="project1-name" placeholder="Ví dụ: Vinhomes Central Park">
+                            </div>
+                            <div class="form-group">
+                                <label class="block mb-2 font-semibold">Diện tích (m²)</label>
+                                <input type="number" id="project1-area" min="0" placeholder="Ví dụ: 80">
+                            </div>
+                            <div class="form-group">
+                                <label class="block mb-2 font-semibold">Đơn giá (triệu/m²)</label>
+                                <input type="number" id="project1-price-per-m2" step="0.1" min="0" placeholder="Ví dụ: 65">
+                            </div>
+                            <div class="form-group">
+                                <label class="block font-bold text-lg">Tổng giá trị (tỷ VNĐ)</label>
+                                <div class="p-3 bg-white rounded-lg text-2xl font-bold text-indigo-600 mt-2">
+                                    <span id="project1-total-value">0</span> tỷ
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="block mb-2 font-semibold">Chi phí khác (triệu VNĐ)</label>
+                                <input type="number" id="project1-other-costs" min="0" value="0" placeholder="Phí, thuế, nội thất">
                             </div>
                         </div>
-                        <div class="form-group">
-                            <label class="block mb-2">Phí trả nợ trước hạn (%)
-                                <div class="tooltip">
-                                    <i class="fas fa-info-circle"></i>
-                                    <span class="tooltip-text">Phí phạt trả nợ trước hạn</span>
-                                </div>
-                            </label>
-                            <div class="input-group">
-                                <input type="number" id="early-payment-fee" class="input-with-suffix" step="0.1" min="0" value="0">
-                                <span class="input-group-text">%</span>
+                    </div>
+
+                    <div class="info-box" style="background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);">
+                        <h3 class="text-xl font-semibold mb-4">Kịch bản Tăng giá</h3>
+                        <div class="grid md:grid-cols-3 gap-4">
+                            <div class="form-group">
+                                <label class="block mb-2 font-semibold">Thận trọng (%/năm)</label>
+                                <input type="number" id="project1-conservative-growth" step="0.1" value="6" placeholder="Ví dụ: 6">
+                            </div>
+                            <div class="form-group">
+                                <label class="block mb-2 font-semibold">Cơ sở (%/năm)</label>
+                                <input type="number" id="project1-base-growth" step="0.1" value="12" placeholder="Ví dụ: 12">
+                            </div>
+                            <div class="form-group">
+                                <label class="block mb-2 font-semibold">Tích cực (%/năm)</label>
+                                <input type="number" id="project1-optimistic-growth" step="0.1" value="18" placeholder="Ví dụ: 18">
                             </div>
                         </div>
-                        <div class="form-group">
-                            <label class="block mb-2">Thời gian áp dụng phí trả nợ trước hạn (năm)
-                                <div class="tooltip">
-                                    <i class="fas fa-info-circle"></i>
-                                    <span class="tooltip-text">Số năm áp dụng phí phạt trả nợ trước hạn</span>
-                                </div>
-                            </label>
-                            <div class="input-group">
-                                <input type="number" id="early-payment-fee-period" class="input-with-suffix" min="0" value="0">
-                                <span class="input-group-text">năm</span>
+                    </div>
+
+                    <div class="info-box" style="background: linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%);">
+                        <h3 class="text-xl font-semibold mb-4">Thu nhập Cho thuê (tùy chọn)</h3>
+                        <div class="grid md:grid-cols-2 gap-4">
+                            <div class="form-group">
+                                <label class="block mb-2 font-semibold">Giá thuê/tháng (triệu VNĐ)</label>
+                                <input type="number" id="project1-rental-income" step="0.1" min="0" value="0" placeholder="Ví dụ: 25">
+                            </div>
+                            <div class="form-group">
+                                <label class="block mb-2 font-semibold">Chi phí vận hành/tháng (triệu VNĐ)</label>
+                                <input type="number" id="project1-operating-costs" step="0.1" min="0" value="0" placeholder="Ví dụ: 3">
                             </div>
                         </div>
                     </div>
                 </div>
+            </div>
+
+            <!-- Project 2 Tab -->
+            <div class="tab-content" id="project2-tab">
+                <h2 class="text-3xl font-semibold text-indigo-700 mb-6">Dự án 2</h2>
                 
-                <div class="bg-yellow-50 p-4 rounded-lg mb-6">
-                    <h3 class="text-xl font-semibold mb-4">Kế hoạch Đầu tư & Giả định Thị trường</h3>
-                    <div class="grid md:grid-cols-3 gap-4">
-                        <div class="form-group">
-                            <label class="block mb-2">Thời gian dự kiến nắm giữ (năm)
-                                <div class="tooltip">
-                                    <i class="fas fa-info-circle"></i>
-                                    <span class="tooltip-text">Thời gian bạn dự định giữ bất động sản trước khi bán</span>
+                <div class="scenario-card mb-6">
+                    <h3 class="text-xl font-semibold mb-4"><i class="fas fa-image mr-2"></i>Hình ảnh Dự án</h3>
+                    <div class="upload-area" onclick="document.getElementById('project2-image-input').click()">
+                        <i class="fas fa-cloud-upload-alt text-5xl text-indigo-500 mb-3"></i>
+                        <p class="text-lg">Nhấn để tải ảnh dự án lên</p>
+                        <p class="text-sm text-gray-500">Định dạng: JPG, PNG (Tối đa 5MB)</p>
+                        <input type="file" id="project2-image-input" accept="image/*" style="display: none;" onchange="previewImage('project2')">
+                    </div>
+                    <div id="project2-image-preview" class="mt-4 text-center"></div>
+                </div>
+
+                <div class="space-y-6">
+                    <div class="info-box">
+                        <h3 class="text-xl font-semibold mb-4">Thông tin Cơ bản</h3>
+                        <div class="grid md:grid-cols-3 gap-4">
+                            <div class="form-group md:col-span-3">
+                                <label class="block mb-2 font-semibold">Tên dự án</label>
+                                <input type="text" id="project2-name" placeholder="Ví dụ: Masteri Thảo Điền">
+                            </div>
+                            <div class="form-group">
+                                <label class="block mb-2 font-semibold">Diện tích (m²)</label>
+                                <input type="number" id="project2-area" min="0" placeholder="Ví dụ: 70">
+                            </div>
+                            <div class="form-group">
+                                <label class="block mb-2 font-semibold">Đơn giá (triệu/m²)</label>
+                                <input type="number" id="project2-price-per-m2" step="0.1" min="0" placeholder="Ví dụ: 55">
+                            </div>
+                            <div class="form-group">
+                                <label class="block font-bold text-lg">Tổng giá trị (tỷ VNĐ)</label>
+                                <div class="p-3 bg-white rounded-lg text-2xl font-bold text-indigo-600 mt-2">
+                                    <span id="project2-total-value">0</span> tỷ
                                 </div>
-                            </label>
-                            <div class="input-group">
-                                <input type="number" id="holding-period" class="input-with-suffix" min="1" value="5">
-                                <span class="input-group-text">năm</span>
+                            </div>
+                            <div class="form-group">
+                                <label class="block mb-2 font-semibold">Chi phí khác (triệu VNĐ)</label>
+                                <input type="number" id="project2-other-costs" min="0" value="0" placeholder="Phí, thuế, nội thất">
                             </div>
                         </div>
-                        <div class="form-group">
-                            <label class="block mb-2">Lãi suất chiết khấu (NPV Discount Rate) (%/năm)
-                                <div class="tooltip">
-                                    <i class="fas fa-info-circle"></i>
-                                    <span class="tooltip-text">Tỷ lệ sinh lời tối thiểu mong muốn cho việc tính NPV</span>
-                                </div>
-                            </label>
-                            <div class="input-group">
-                                <input type="number" id="discount-rate" class="input-with-suffix" step="0.1" min="0" value="8">
-                                <span class="input-group-text">%</span>
+                    </div>
+
+                    <div class="info-box" style="background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);">
+                        <h3 class="text-xl font-semibold mb-4">Kịch bản Tăng giá</h3>
+                        <div class="grid md:grid-cols-3 gap-4">
+                            <div class="form-group">
+                                <label class="block mb-2 font-semibold">Thận trọng (%/năm)</label>
+                                <input type="number" id="project2-conservative-growth" step="0.1" value="6">
+                            </div>
+                            <div class="form-group">
+                                <label class="block mb-2 font-semibold">Cơ sở (%/năm)</label>
+                                <input type="number" id="project2-base-growth" step="0.1" value="12">
+                            </div>
+                            <div class="form-group">
+                                <label class="block mb-2 font-semibold">Tích cực (%/năm)</label>
+                                <input type="number" id="project2-optimistic-growth" step="0.1" value="18">
                             </div>
                         </div>
-                        <div class="form-group">
-                            <label class="block mb-2">Chi phí bán lại (Phí môi giới, thuế TNCN) (% giá bán)
-                                <div class="tooltip">
-                                    <i class="fas fa-info-circle"></i>
-                                    <span class="tooltip-text">Tổng chi phí khi bán lại tính theo % giá bán</span>
+                    </div>
+
+                    <div class="info-box" style="background: linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%);">
+                        <h3 class="text-xl font-semibold mb-4">Thu nhập Cho thuê</h3>
+                        <div class="grid md:grid-cols-2 gap-4">
+                            <div class="form-group">
+                                <label class="block mb-2 font-semibold">Giá thuê/tháng (triệu VNĐ)</label>
+                                <input type="number" id="project2-rental-income" step="0.1" min="0" value="0">
+                            </div>
+                            <div class="form-group">
+                                <label class="block mb-2 font-semibold">Chi phí vận hành/tháng (triệu VNĐ)</label>
+                                <input type="number" id="project2-operating-costs" step="0.1" min="0" value="0">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Project 3 Tab -->
+            <div class="tab-content" id="project3-tab">
+                <h2 class="text-3xl font-semibold text-indigo-700 mb-6">Dự án 3</h2>
+                
+                <div class="scenario-card mb-6">
+                    <h3 class="text-xl font-semibold mb-4"><i class="fas fa-image mr-2"></i>Hình ảnh Dự án</h3>
+                    <div class="upload-area" onclick="document.getElementById('project3-image-input').click()">
+                        <i class="fas fa-cloud-upload-alt text-5xl text-indigo-500 mb-3"></i>
+                        <p class="text-lg">Nhấn để tải ảnh dự án lên</p>
+                        <p class="text-sm text-gray-500">Định dạng: JPG, PNG (Tối đa 5MB)</p>
+                        <input type="file" id="project3-image-input" accept="image/*" style="display: none;" onchange="previewImage('project3')">
+                    </div>
+                    <div id="project3-image-preview" class="mt-4 text-center"></div>
+                </div>
+
+                <div class="space-y-6">
+                    <div class="info-box">
+                        <h3 class="text-xl font-semibold mb-4">Thông tin Cơ bản</h3>
+                        <div class="grid md:grid-cols-3 gap-4">
+                            <div class="form-group md:col-span-3">
+                                <label class="block mb-2 font-semibold">Tên dự án</label>
+                                <input type="text" id="project3-name" placeholder="Ví dụ: The Sun Avenue">
+                            </div>
+                            <div class="form-group">
+                                <label class="block mb-2 font-semibold">Diện tích (m²)</label>
+                                <input type="number" id="project3-area" min="0" placeholder="Ví dụ: 75">
+                            </div>
+                            <div class="form-group">
+                                <label class="block mb-2 font-semibold">Đơn giá (triệu/m²)</label>
+                                <input type="number" id="project3-price-per-m2" step="0.1" min="0" placeholder="Ví dụ: 48">
+                            </div>
+                            <div class="form-group">
+                                <label class="block font-bold text-lg">Tổng giá trị (tỷ VNĐ)</label>
+                                <div class="p-3 bg-white rounded-lg text-2xl font-bold text-indigo-600 mt-2">
+                                    <span id="project3-total-value">0</span> tỷ
                                 </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="block mb-2 font-semibold">Chi phí khác (triệu VNĐ)</label>
+                                <input type="number" id="project3-other-costs" min="0" value="0" placeholder="Phí, thuế, nội thất">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="info-box" style="background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);">
+                        <h3 class="text-xl font-semibold mb-4">Kịch bản Tăng giá</h3>
+                        <div class="grid md:grid-cols-3 gap-4">
+                            <div class="form-group">
+                                <label class="block mb-2 font-semibold">Thận trọng (%/năm)</label>
+                                <input type="number" id="project3-conservative-growth" step="0.1" value="6">
+                            </div>
+                            <div class="form-group">
+                                <label class="block mb-2 font-semibold">Cơ sở (%/năm)</label>
+                                <input type="number" id="project3-base-growth" step="0.1" value="12">
+                            </div>
+                            <div class="form-group">
+                                <label class="block mb-2 font-semibold">Tích cực (%/năm)</label>
+                                <input type="number" id="project3-optimistic-growth" step="0.1" value="18">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="info-box" style="background: linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%);">
+                        <h3 class="text-xl font-semibold mb-4">Thu nhập Cho thuê</h3>
+                        <div class="grid md:grid-cols-2 gap-4">
+                            <div class="form-group">
+                                <label class="block mb-2 font-semibold">Giá thuê/tháng (triệu VNĐ)</label>
+                                <input type="number" id="project3-rental-income" step="0.1" min="0" value="0">
+                            </div>
+                            <div class="form-group">
+                                <label class="block mb-2 font-semibold">Chi phí vận hành/tháng (triệu VNĐ)</label>
+                                <input type="number" id="project3-operating-costs" step="0.1" min="0" value="0">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Scenarios Comparison Tab -->
+            
+            <!-- Comparison Tab -->
+            <div class="tab-content" id="comparison-tab">
+                <h2 class="text-3xl font-semibold text-indigo-700 mb-6">
+                    <i class="fas fa-balance-scale-left mr-3"></i>So sánh với Các Kênh Đầu tư Khác
+                </h2>
+                
+                <div class="info-box">
+                    <p class="text-lg mb-4">
+                        <i class="fas fa-info-circle mr-2"></i>
+                        So sánh lợi nhuận đầu tư Bất động sản với các kênh đầu tư phổ biến khác trong cùng thời kỳ.
+                    </p>
+                </div>
+
+                <div class="scenario-card mb-6">
+                    <h3 class="text-xl font-bold mb-4"><i class="fas fa-cog mr-2"></i>Thông số So sánh</h3>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="form-group">
+                            <label class="block mb-2 font-semibold">Số tiền đầu tư (tỷ VNĐ)</label>
+                            <input type="number" id="comparison-capital" step="0.1" value="2" placeholder="Ví dụ: 2.0">
+                        </div>
+                        <div class="form-group">
+                            <label class="block mb-2 font-semibold">Thời gian đầu tư (năm)</label>
+                            <input type="number" id="comparison-period" min="1" value="5" placeholder="Ví dụ: 5">
+                        </div>
+                    </div>
+                    
+                    <h4 class="text-lg font-semibold mt-6 mb-4">Lãi suất/Tỷ suất sinh lời các kênh (%/năm)</h4>
+                    <div class="grid md:grid-cols-4 gap-4">
+                        <div class="form-group">
+                            <label class="block mb-2">Tiết kiệm ngân hàng</label>
+                            <input type="number" id="rate-savings" step="0.1" value="6.0" placeholder="6.0">
+                        </div>
+                        <div class="form-group">
+                            <label class="block mb-2">Chứng chỉ quỹ (CCQ)</label>
+                            <input type="number" id="rate-fund" step="0.1" value="8.5" placeholder="8.5">
+                        </div>
+                        <div class="form-group">
+                            <label class="block mb-2">Vàng</label>
+                            <input type="number" id="rate-gold" step="0.1" value="7.0" placeholder="7.0">
+                        </div>
+                        <div class="form-group">
+                            <label class="block mb-2">Chứng khoán</label>
+                            <input type="number" id="rate-stock" step="0.1" value="12.0" placeholder="12.0">
+                        </div>
+                    </div>
+                    
+                    <div class="mt-6 text-center">
+                        <button onclick="compareInvestments()" class="bg-indigo-600 text-white px-8 py-3 rounded-lg hover:bg-indigo-700 btn">
+                            <i class="fas fa-calculator mr-2"></i>So sánh Ngay
+                        </button>
+                    </div>
+                </div>
+
+                <div id="comparison-results-section" style="display: none;">
+                    <div class="scenario-card">
+                        <h3 class="text-2xl font-bold mb-6 text-center">Kết quả So sánh</h3>
+                        <div id="comparison-results-content"></div>
+                    </div>
+                    
+                    <div class="chart-container mt-8">
+                        <canvas id="comparisonChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+<div class="tab-content" id="scenarios-tab">
+                <h2 class="text-3xl font-semibold text-indigo-700 mb-6"><i class="fas fa-route mr-3"></i>So sánh Kịch bản Đầu tư</h2>
+                
+                <div class="info-box">
+                    <p class="text-lg mb-4">Chọn mục đích đầu tư để xem phân tích phù hợp nhất với nhu cầu của bạn.</p>
+                </div>
+
+                <!-- Priority Selection for "Mua để Ở" -->
+                <div class="scenario-card mb-6">
+                    <h3 class="text-xl font-bold mb-4 text-blue-700">
+                        <i class="fas fa-home mr-2"></i>Chọn Ưu tiên cho Kịch bản "Mua để Ở"
+                    </h3>
+                    <p class="mb-4 text-gray-600">Tích vào các yếu tố quan trọng với bạn khi mua để ở:</p>
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <label class="flex items-center p-3 bg-blue-50 rounded-lg cursor-pointer hover:bg-blue-100">
+                            <input type="checkbox" class="priority-checkbox" id="priority-area" checked>
+                            <span class="font-semibold">Diện tích rộng (≥ 70m²)</span>
+                        </label>
+                        <label class="flex items-center p-3 bg-blue-50 rounded-lg cursor-pointer hover:bg-blue-100">
+                            <input type="checkbox" class="priority-checkbox" id="priority-price" checked>
+                            <span class="font-semibold">Giá trị hợp lý (< 5 tỷ)</span>
+                        </label>
+                        <label class="flex items-center p-3 bg-blue-50 rounded-lg cursor-pointer hover:bg-blue-100">
+                            <input type="checkbox" class="priority-checkbox" id="priority-location">
+                            <span class="font-semibold">Vị trí (dựa vào tên dự án)</span>
+                        </label>
+                        <label class="flex items-center p-3 bg-blue-50 rounded-lg cursor-pointer hover:bg-blue-100">
+                            <input type="checkbox" class="priority-checkbox" id="priority-rental">
+                            <span class="font-semibold">Tiềm năng cho thuê cao</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="grid md:grid-cols-3 gap-6 mb-8">
+                    <button class="scenario-card cursor-pointer hover:scale-105" onclick="showScenario('live')">
+                        <div class="text-center">
+                            <i class="fas fa-home text-5xl text-blue-600 mb-4"></i>
+                            <h3 class="text-2xl font-bold mb-3">Mua để Ở</h3>
+                            <p class="text-gray-600">Ưu tiên theo lựa chọn của bạn</p>
+                        </div>
+                    </button>
+
+                    <button class="scenario-card cursor-pointer hover:scale-105" onclick="showScenario('invest')">
+                        <div class="text-center">
+                            <i class="fas fa-chart-line text-5xl text-green-600 mb-4"></i>
+                            <h3 class="text-2xl font-bold mb-3">Mua để Đầu tư</h3>
+                            <p class="text-gray-600">Ưu tiên ROI, NPV, IRR, tiềm năng tăng giá</p>
+                        </div>
+                    </button>
+
+                    <button class="scenario-card cursor-pointer hover:scale-105" onclick="showScenario('hybrid')">
+                        <div class="text-center">
+                            <i class="fas fa-balance-scale text-5xl text-purple-600 mb-4"></i>
+                            <h3 class="text-2xl font-bold mb-3">Kết hợp</h3>
+                            <p class="text-gray-600">Cân bằng giữa chất lượng sống và đầu tư</p>
+                        </div>
+                    </button>
+                </div>
+
+                <div id="scenario-results" class="mt-8"></div>
+            </div>
+
+            <!-- Interactive Simulation Tab -->
+            <div class="tab-content" id="simulation-tab">
+                <h2 class="text-3xl font-semibold text-indigo-700 mb-6"><i class="fas fa-sliders-h mr-3"></i>Mô phỏng Tương tác</h2>
+                
+                <div class="info-box">
+                    <p class="text-lg">Điều chỉnh các thông số để xem tác động đến lợi nhuận đầu tư theo thời gian thực.</p>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div class="scenario-card">
+                        <h3 class="text-xl font-bold mb-6">Thông số Mô phỏng</h3>
+                        
+                        <div class="slider-container">
+                            <label class="block mb-2 font-semibold">
+                                Lãi suất vay: <span id="sim-interest-display" class="text-indigo-600 font-bold">8.5%</span>
                             </label>
-                            <div class="input-group">
-                                <input type="number" id="selling-costs" class="input-with-suffix" step="0.1" min="0" value="2">
-                                <span class="input-group-text">%</span>
+                            <input type="range" id="sim-interest-rate" class="slider" min="5" max="15" step="0.1" value="8.5">
+                        </div>
+
+                        <div class="slider-container">
+                            <label class="block mb-2 font-semibold">
+                                Tăng giá/năm: <span id="sim-growth-display" class="text-green-600 font-bold">12%</span>
+                            </label>
+                            <input type="range" id="sim-growth-rate" class="slider" min="0" max="100" step="1" value="12">
+                        </div>
+
+                        <div class="slider-container">
+                            <label class="block mb-2 font-semibold">
+                                Giá thuê/tháng: <span id="sim-rental-display" class="text-purple-600 font-bold">20 triệu</span>
+                            </label>
+                            <input type="range" id="sim-rental-income" class="slider" min="0" max="200" step="1" value="20">
+                        </div>
+                    </div>
+
+                    <div class="scenario-card">
+                        <h3 class="text-xl font-bold mb-6">Kết quả Mô phỏng</h3>
+                        <div id="simulation-results" class="space-y-4">
+                            <div class="bg-blue-50 p-4 rounded-lg">
+                                <div class="text-sm text-gray-600">ROI (5 năm)</div>
+                                <div class="text-3xl font-bold text-blue-600"><span id="sim-roi">--</span>%</div>
+                            </div>
+                            <div class="bg-green-50 p-4 rounded-lg">
+                                <div class="text-sm text-gray-600">Lợi nhuận ước tính</div>
+                                <div class="text-3xl font-bold text-green-600"><span id="sim-profit">--</span> tỷ</div>
+                            </div>
+                            <div class="bg-purple-50 p-4 rounded-lg">
+                                <div class="text-sm text-gray-600">Thu nhập cho thuê/năm</div>
+                                <div class="text-3xl font-bold text-purple-600"><span id="sim-rental-year">--</span> triệu</div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-            </div>
-            
-            <!-- Project 1 Tab -->
-            <div class="tab-content" id="project1-tab">
-                <h2 class="text-2xl font-semibold text-indigo-700 mb-6">Dự án 1</h2>
-                <div class="bg-gray-50 p-4 rounded-lg mb-6">
-                    <div class="grid md:grid-cols-3 gap-4">
-                        <div class="form-group md:col-span-3">
-                            <label class="block mb-2">Tên dự án</label>
-                            <input type="text" id="project1-name" placeholder="Nhập tên dự án 1">
-                        </div>
-                        <div class="form-group">
-                            <label class="block mb-2">Diện tích căn hộ (m²)</label>
-                            <div class="input-group">
-                                <input type="number" id="project1-area" class="input-with-suffix" min="0">
-                                <span class="input-group-text">m²</span>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="block mb-2">Đơn giá mua (triệu/m²)</label>
-                            <div class="input-group">
-                                <input type="number" id="project1-price-per-m2" class="input-with-suffix" step="0.1" min="0">
-                                <span class="input-group-text">triệu/m²</span>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="block font-medium">Tổng giá trị căn hộ (tỷ VNĐ)</label>
-                            <div class="p-2 bg-gray-100 rounded mt-1">
-                                <span id="project1-total-value" class="font-bold">0</span> tỷ VNĐ
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="block mb-2">Chi phí ban đầu khác (Thuế, phí, nội thất) (triệu VNĐ)</label>
-                            <div class="input-group">
-                                <input type="number" id="project1-other-costs" class="input-with-suffix" min="0" value="0">
-                                <span class="input-group-text">triệu</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="bg-green-50 p-4 rounded-lg mb-6">
-                    <h3 class="text-xl font-semibold mb-4">Giả định Kịch bản Tăng giá</h3>
-                    <div class="grid md:grid-cols-3 gap-4">
-                        <div class="form-group">
-                            <label class="block mb-2">Kịch bản Thận trọng: Tăng giá/năm (%)</label>
-                            <div class="input-group">
-                                <input type="number" id="project1-conservative-growth" class="input-with-suffix" step="0.1" value="3">
-                                <span class="input-group-text">%</span>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="block mb-2">Kịch bản Cơ sở: Tăng giá/năm (%)</label>
-                            <div class="input-group">
-                                <input type="number" id="project1-base-growth" class="input-with-suffix" step="0.1" value="5">
-                                <span class="input-group-text">%</span>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="block mb-2">Kịch bản Tích cực: Tăng giá/năm (%)</label>
-                            <div class="input-group">
-                                <input type="number" id="project1-optimistic-growth" class="input-with-suffix" step="0.1" value="7">
-                                <span class="input-group-text">%</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="bg-purple-50 p-4 rounded-lg mb-6">
-                    <h3 class="text-xl font-semibold mb-4">Phân tích dòng tiền từ cho thuê (tùy chọn)</h3>
-                    <div class="grid md:grid-cols-2 gap-4">
-                        <div class="form-group">
-                            <label class="block mb-2">Giá cho thuê dự kiến/tháng (triệu VNĐ)</label>
-                            <div class="input-group">
-                                <input type="number" id="project1-rental-income" class="input-with-suffix" step="0.1" min="0" value="0">
-                                <span class="input-group-text">triệu</span>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="block mb-2">Chi phí vận hành/tháng (nếu cho thuê) (triệu VNĐ)</label>
-                            <div class="input-group">
-                                <input type="number" id="project1-operating-costs" class="input-with-suffix" step="0.1" min="0" value="0">
-                                <span class="input-group-text">triệu</span>
-                            </div>
-                        </div>
-                    </div>
+                <div class="chart-container mt-8">
+                    <canvas id="simulationChart"></canvas>
                 </div>
             </div>
-            
-            <!-- Project 2 Tab -->
-            <div class="tab-content" id="project2-tab">
-                <h2 class="text-2xl font-semibold text-indigo-700 mb-6">Dự án 2</h2>
-                <div class="bg-gray-50 p-4 rounded-lg mb-6">
-                    <div class="grid md:grid-cols-3 gap-4">
-                        <div class="form-group md:col-span-3">
-                            <label class="block mb-2">Tên dự án</label>
-                            <input type="text" id="project2-name" placeholder="Nhập tên dự án 2">
-                        </div>
-                        <div class="form-group">
-                            <label class="block mb-2">Diện tích căn hộ (m²)</label>
-                            <div class="input-group">
-                                <input type="number" id="project2-area" class="input-with-suffix" min="0">
-                                <span class="input-group-text">m²</span>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="block mb-2">Đơn giá mua (triệu/m²)</label>
-                            <div class="input-group">
-                                <input type="number" id="project2-price-per-m2" class="input-with-suffix" step="0.1" min="0">
-                                <span class="input-group-text">triệu/m²</span>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="block font-medium">Tổng giá trị căn hộ (tỷ VNĐ)</label>
-                            <div class="p-2 bg-gray-100 rounded mt-1">
-                                <span id="project2-total-value" class="font-bold">0</span> tỷ VNĐ
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="block mb-2">Chi phí ban đầu khác (Thuế, phí, nội thất) (triệu VNĐ)</label>
-                            <div class="input-group">
-                                <input type="number" id="project2-other-costs" class="input-with-suffix" min="0" value="0">
-                                <span class="input-group-text">triệu</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="bg-green-50 p-4 rounded-lg mb-6">
-                    <h3 class="text-xl font-semibold mb-4">Giả định Kịch bản Tăng giá</h3>
-                    <div class="grid md:grid-cols-3 gap-4">
-                        <div class="form-group">
-                            <label class="block mb-2">Kịch bản Thận trọng: Tăng giá/năm (%)</label>
-                            <div class="input-group">
-                                <input type="number" id="project2-conservative-growth" class="input-with-suffix" step="0.1" value="3">
-                                <span class="input-group-text">%</span>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="block mb-2">Kịch bản Cơ sở: Tăng giá/năm (%)</label>
-                            <div class="input-group">
-                                <input type="number" id="project2-base-growth" class="input-with-suffix" step="0.1" value="5">
-                                <span class="input-group-text">%</span>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="block mb-2">Kịch bản Tích cực: Tăng giá/năm (%)</label>
-                            <div class="input-group">
-                                <input type="number" id="project2-optimistic-growth" class="input-with-suffix" step="0.1" value="7">
-                                <span class="input-group-text">%</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="bg-purple-50 p-4 rounded-lg mb-6">
-                    <h3 class="text-xl font-semibold mb-4">Phân tích dòng tiền từ cho thuê (tùy chọn)</h3>
-                    <div class="grid md:grid-cols-2 gap-4">
-                        <div class="form-group">
-                            <label class="block mb-2">Giá cho thuê dự kiến/tháng (triệu VNĐ)</label>
-                            <div class="input-group">
-                                <input type="number" id="project2-rental-income" class="input-with-suffix" step="0.1" min="0" value="0">
-                                <span class="input-group-text">triệu</span>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="block mb-2">Chi phí vận hành/tháng (nếu cho thuê) (triệu VNĐ)</label>
-                            <div class="input-group">
-                                <input type="number" id="project2-operating-costs" class="input-with-suffix" step="0.1" min="0" value="0">
-                                <span class="input-group-text">triệu</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Project 3 Tab -->
-            <div class="tab-content" id="project3-tab">
-                <h2 class="text-2xl font-semibold text-indigo-700 mb-6">Dự án 3</h2>
-                <div class="bg-gray-50 p-4 rounded-lg mb-6">
-                    <div class="grid md:grid-cols-3 gap-4">
-                        <div class="form-group md:col-span-3">
-                            <label class="block mb-2">Tên dự án</label>
-                            <input type="text" id="project3-name" placeholder="Nhập tên dự án 3">
-                        </div>
-                        <div class="form-group">
-                            <label class="block mb-2">Diện tích căn hộ (m²)</label>
-                            <div class="input-group">
-                                <input type="number" id="project3-area" class="input-with-suffix" min="0">
-                                <span class="input-group-text">m²</span>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="block mb-2">Đơn giá mua (triệu/m²)</label>
-                            <div class="input-group">
-                                <input type="number" id="project3-price-per-m2" class="input-with-suffix" step="0.1" min="0">
-                                <span class="input-group-text">triệu/m²</span>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="block font-medium">Tổng giá trị căn hộ (tỷ VNĐ)</label>
-                            <div class="p-2 bg-gray-100 rounded mt-1">
-                                <span id="project3-total-value" class="font-bold">0</span> tỷ VNĐ
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="block mb-2">Chi phí ban đầu khác (Thuế, phí, nội thất) (triệu VNĐ)</label>
-                            <div class="input-group">
-                                <input type="number" id="project3-other-costs" class="input-with-suffix" min="0" value="0">
-                                <span class="input-group-text">triệu</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="bg-green-50 p-4 rounded-lg mb-6">
-                    <h3 class="text-xl font-semibold mb-4">Giả định Kịch bản Tăng giá</h3>
-                    <div class="grid md:grid-cols-3 gap-4">
-                        <div class="form-group">
-                            <label class="block mb-2">Kịch bản Thận trọng: Tăng giá/năm (%)</label>
-                            <div class="input-group">
-                                <input type="number" id="project3-conservative-growth" class="input-with-suffix" step="0.1" value="3">
-                                <span class="input-group-text">%</span>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="block mb-2">Kịch bản Cơ sở: Tăng giá/năm (%)</label>
-                            <div class="input-group">
-                                <input type="number" id="project3-base-growth" class="input-with-suffix" step="0.1" value="5">
-                                <span class="input-group-text">%</span>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="block mb-2">Kịch bản Tích cực: Tăng giá/năm (%)</label>
-                            <div class="input-group">
-                                <input type="number" id="project3-optimistic-growth" class="input-with-suffix" step="0.1" value="7">
-                                <span class="input-group-text">%</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="bg-purple-50 p-4 rounded-lg mb-6">
-                    <h3 class="text-xl font-semibold mb-4">Phân tích dòng tiền từ cho thuê (tùy chọn)</h3>
-                    <div class="grid md:grid-cols-2 gap-4">
-                        <div class="form-group">
-                            <label class="block mb-2">Giá cho thuê dự kiến/tháng (triệu VNĐ)</label>
-                            <div class="input-group">
-                                <input type="number" id="project3-rental-income" class="input-with-suffix" step="0.1" min="0" value="0">
-                                <span class="input-group-text">triệu</span>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="block mb-2">Chi phí vận hành/tháng (nếu cho thuê) (triệu VNĐ)</label>
-                            <div class="input-group">
-                                <input type="number" id="project3-operating-costs" class="input-with-suffix" step="0.1" min="0" value="0">
-                                <span class="input-group-text">triệu</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
+
             <!-- Results Tab -->
             <div class="tab-content" id="results-tab">
-                <h2 class="text-2xl font-semibold text-indigo-700 mb-6">Kết quả Phân tích Đầu tư</h2>
-                <div id="results-container" class="bg-white p-4 rounded-lg">
-                    <div class="text-center py-8 text-gray-500">
-                        <i class="fas fa-calculator text-4xl mb-4"></i>
-                        <p>Vui lòng nhập thông tin và nhấn "Tính toán & So sánh" để xem kết quả</p>
+                <h2 class="text-3xl font-semibold text-indigo-700 mb-6"><i class="fas fa-chart-bar mr-3"></i>Kết quả Phân tích Đầu tư</h2>
+                
+                <!-- Project Images Display -->
+                <div id="project-images-display" class="mb-8"></div>
+
+                <div id="results-container" class="rounded-lg">
+                    <div class="text-center py-12 text-gray-500">
+                        <i class="fas fa-calculator text-6xl mb-4"></i>
+                        <p class="text-xl">Vui lòng nhập thông tin và nhấn "Tính toán & So sánh" để xem kết quả</p>
                     </div>
                 </div>
+
+                <!-- Project Scores -->
+                <div id="project-scores-section" style="display: none;" class="mt-8">
+                    <h3 class="text-2xl font-semibold mb-4"><i class="fas fa-star mr-2"></i>Điểm số Dự án</h3>
+                    <div id="project-scores" class="grid md:grid-cols-3 gap-6"></div>
+                </div>
+
+                <!-- Recommendations -->
+                <div id="recommendations-section" style="display: none;" class="mt-8">
+                    <h3 class="text-2xl font-semibold mb-4"><i class="fas fa-lightbulb mr-2"></i>Đề xuất và Kiến nghị</h3>
+                    <div id="recommendations-content"></div>
+                </div>
                 
-                <div id="cash-flow-container" class="mt-8">
-                    <h3 class="text-xl font-semibold mb-4">Chi tiết dòng tiền</h3>
-                    <div id="cash-flow-details" class="bg-white p-4 rounded-lg">
-                        <!-- Cash flow details will appear here -->
+                <!-- Annual Cash Flow Details -->
+                <div id="cash-flow-section" style="display: none;" class="mt-8">
+                    <h3 class="text-2xl font-semibold mb-4"><i class="fas fa-coins mr-2"></i>Chi tiết Dòng tiền Hàng năm</h3>
+                    <div id="cash-flow-details" class="scenario-card"></div>
+                    
+                    <div class="chart-container">
+                        <h4 class="text-xl font-semibold mb-4">Biểu đồ Dòng tiền theo Năm</h4>
+                        <canvas id="cashFlowChart"></canvas>
                     </div>
                 </div>
             </div>
         </div>
         
         <!-- Action buttons -->
-        <div class="flex justify-center space-x-4 mt-6 no-print">
-            <button id="calculate-btn" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-6 rounded-lg shadow btn">
-                <i class="fas fa-calculator mr-2"></i>Tính toán & So sánh
+        <div class="flex justify-center space-x-6 mt-8 no-print">
+            <button id="calculate-btn" class="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-bold py-4 px-8 rounded-lg shadow-lg btn text-lg">
+                <i class="fas fa-calculator mr-3"></i>Tính toán & So sánh
             </button>
-            <button id="reset-btn" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-6 rounded-lg shadow btn">
-                <i class="fas fa-redo mr-2"></i>Reset
+            <button id="export-pdf-btn" class="bg-gradient-to-r from-green-600 to-teal-600 hover:from-green-700 hover:to-teal-700 text-white font-bold py-4 px-8 rounded-lg shadow-lg btn text-lg">
+                <i class="fas fa-file-pdf mr-3"></i>Xuất PDF
+            </button>
+            <button id="reset-btn" class="bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white font-bold py-4 px-8 rounded-lg shadow-lg btn text-lg">
+                <i class="fas fa-redo mr-3"></i>Reset
             </button>
         </div>
 
-        <div class="mt-8 text-center text-gray-600 text-sm no-print">
-            <p>© 2025 Công cụ Phân tích Đầu tư Bất động sản | Thiết kế bởi OneS Corp</p>
+        <!-- Knowledge Section (Moved before Footer) -->
+        <div class="knowledge-section mt-12">
+            <h2 class="text-3xl font-bold mb-6 text-center flex items-center justify-center">
+                <i class="fas fa-graduation-cap mr-3 text-4xl"></i>
+                Kiến thức Cơ bản về Đầu tư Bất động sản
+            </h2>
+            
+            <div class="grid md:grid-cols-2 gap-6">
+                <!-- NPV Discount Rate -->
+                <div class="bg-white p-5 rounded-lg shadow">
+                    <h3 class="text-xl font-semibold mb-3 text-blue-700">
+                        <i class="fas fa-percent mr-2"></i>Tỷ lệ chiết khấu NPV (Discount Rate)
+                    </h3>
+                    <p class="mb-3 text-gray-700">Là tỷ suất sinh lời tối thiểu mà nhà đầu tư kỳ vọng từ khoản đầu tư BĐS.</p>
+                    <ul class="space-y-2">
+                        <li><span class="font-semibold">Căn hộ:</span> <span class="bg-blue-100 px-3 py-1 rounded">10-13%/năm</span></li>
+                        <li><span class="font-semibold">Nhà phố:</span> <span class="bg-green-100 px-3 py-1 rounded">13-16%/năm</span></li>
+                        <li><span class="font-semibold">Biệt thự:</span> <span class="bg-yellow-100 px-3 py-1 rounded">15-18%/năm</span></li>
+                        <li><span class="font-semibold">Resort:</span> <span class="bg-red-100 px-3 py-1 rounded">18-25%/năm</span></li>
+                    </ul>
+                </div>
+
+                <!-- Growth Scenarios -->
+                <div class="bg-white p-5 rounded-lg shadow">
+                    <h3 class="text-xl font-semibold mb-3 text-green-700">
+                        <i class="fas fa-chart-line mr-2"></i>Kịch bản Tăng giá
+                    </h3>
+                    <div class="space-y-3">
+                        <div class="bg-yellow-50 p-3 rounded-lg">
+                            <div class="flex justify-between">
+                                <span class="font-semibold">Thận trọng:</span>
+                                <span class="bg-yellow-200 px-3 py-1 rounded font-bold">6%/năm</span>
+                            </div>
+                        </div>
+                        <div class="bg-blue-50 p-3 rounded-lg">
+                            <div class="flex justify-between">
+                                <span class="font-semibold">Cơ sở:</span>
+                                <span class="bg-blue-200 px-3 py-1 rounded font-bold">12%/năm</span>
+                            </div>
+                        </div>
+                        <div class="bg-green-50 p-3 rounded-lg">
+                            <div class="flex justify-between">
+                                <span class="font-semibold">Tích cực:</span>
+                                <span class="bg-green-200 px-3 py-1 rounded font-bold">18%/năm</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ROI -->
+                <div class="bg-white p-5 rounded-lg shadow">
+                    <h3 class="text-xl font-semibold mb-3 text-purple-700">
+                        <i class="fas fa-percentage mr-2"></i>ROI (Return on Investment)
+                    </h3>
+                    <p class="mb-2 text-gray-700"><strong>Định nghĩa:</strong> Tỷ suất lợi nhuận trên vốn đầu tư</p>
+                    <p class="mb-2"><strong>Công thức:</strong> <code class="bg-gray-100 px-2 py-1 rounded">ROI = (Lợi nhuận / Vốn đầu tư) × 100%</code></p>
+                    <p class="text-sm text-gray-600">ROI cao = Đầu tư hiệu quả. VD: ROI 50% nghĩa là bạn kiếm được 50 triệu từ 100 triệu vốn</p>
+                </div>
+
+                <!-- IRR -->
+                <div class="bg-white p-5 rounded-lg shadow">
+                    <h3 class="text-xl font-semibold mb-3 text-indigo-700">
+                        <i class="fas fa-chart-area mr-2"></i>IRR (Internal Rate of Return)
+                    </h3>
+                    <p class="mb-2 text-gray-700"><strong>Định nghĩa:</strong> Tỷ suất hoàn vốn nội bộ, tính theo thời gian</p>
+                    <p class="mb-2"><strong>Ý nghĩa:</strong> IRR > Lãi suất vay → Nên đầu tư</p>
+                    <p class="text-sm text-gray-600">VD: IRR 15%/năm nghĩa là dự án sinh lời 15% mỗi năm khi tính cả yếu tố thời gian</p>
+                </div>
+
+                <!-- LTV -->
+                <div class="bg-white p-5 rounded-lg shadow">
+                    <h3 class="text-xl font-semibold mb-3 text-orange-700">
+                        <i class="fas fa-hand-holding-usd mr-2"></i>LTV (Loan-to-Value)
+                    </h3>
+                    <p class="mb-2 text-gray-700"><strong>Định nghĩa:</strong> Tỷ lệ vay so với giá trị tài sản</p>
+                    <p class="mb-2"><strong>Công thức:</strong> <code class="bg-gray-100 px-2 py-1 rounded">LTV = (Số tiền vay / Giá trị BĐS) × 100%</code></p>
+                    <p class="text-sm text-gray-600">
+                        <strong>An toàn:</strong> LTV &lt; 70% | 
+                        <strong>Cảnh báo:</strong> LTV 70-80% | 
+                        <strong>Rủi ro:</strong> LTV &gt; 80%
+                    </p>
+                </div>
+
+                <!-- NPV -->
+                <div class="bg-white p-5 rounded-lg shadow">
+                    <h3 class="text-xl font-semibold mb-3 text-teal-700">
+                        <i class="fas fa-dollar-sign mr-2"></i>NPV (Net Present Value)
+                    </h3>
+                    <p class="mb-2 text-gray-700"><strong>Định nghĩa:</strong> Giá trị hiện tại ròng của dự án</p>
+                    <p class="mb-2"><strong>Ý nghĩa:</strong> NPV > 0 → Nên đầu tư | NPV < 0 → Không nên</p>
+                    <p class="text-sm text-gray-600">NPV tính giá trị tiền theo thời gian. VD: NPV 500 triệu nghĩa là dự án tạo ra 500tr giá trị thực</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer-contact">
+            <h3 class="text-2xl font-bold mb-3">Vũ Trọng Khải</h3>
+            <p class="text-xl mb-4">Tư vấn, quản lý Bất Động Sản Cao Cấp tại TP. Hồ Chí Minh</p>
+            <div class="flex justify-center items-center space-x-6 text-lg flex-wrap">
+                <div><i class="fas fa-phone mr-2"></i>0902 79 8800</div>
+                <div><i class="fas fa-globe mr-2"></i>www.vutrongkhai.com</div>
+            </div>
+            <div class="mt-6 text-sm">
+                <p>© 2025 Công cụ Phân tích Đầu tư Bất động sản | Powered by Vũ Trọng Khải</p>
+            </div>
         </div>
     </div>
 
     <script>
+        // Global variables
+        let simulationChart = null;
+        let cashFlowChart = null;
+        let calculatedProjects = [];
+        const projectImages = { project1: null, project2: null, project3: null };
+
         document.addEventListener('DOMContentLoaded', function() {
-            // Tab switching
+            initializeApp();
+        });
+
+        function initializeApp() {
+            setupTabs();
+            setupAutoCalculations();
+            setupEventListeners();
+            setupSimulationSliders();
+        }
+
+        function setupTabs() {
             const tabs = document.querySelectorAll('.tab');
             const tabContents = document.querySelectorAll('.tab-content');
             
             tabs.forEach(tab => {
                 tab.addEventListener('click', () => {
                     const tabId = tab.getAttribute('data-tab');
-                    
-                    // Remove active class from all tabs and contents
-                    tabs.forEach(t => t.classList.remove('active'));
-                    tabs.forEach(t => t.classList.remove('bg-indigo-100'));
-                    tabs.forEach(t => t.classList.add('bg-gray-200'));
+                    tabs.forEach(t => {
+                        t.classList.remove('active', 'bg-indigo-100');
+                        t.classList.add('bg-gray-200');
+                    });
                     tabContents.forEach(c => c.classList.remove('active'));
-                    
-                    // Add active class to current tab and content
-                    tab.classList.add('active');
-                    tab.classList.add('bg-indigo-100');
+                    tab.classList.add('active', 'bg-indigo-100');
                     tab.classList.remove('bg-gray-200');
                     document.getElementById(`${tabId}-tab`).classList.add('active');
                 });
             });
-            
-            // Project total value calculations
-            function calculateTotalValue(projectNum) {
-                const area = parseFloat(document.getElementById(`project${projectNum}-area`).value) || 0;
-                const pricePerM2 = parseFloat(document.getElementById(`project${projectNum}-price-per-m2`).value) || 0;
-                const totalValue = (area * pricePerM2) / 1000; // Convert to billions
-                document.getElementById(`project${projectNum}-total-value`).textContent = totalValue.toFixed(3);
-                return totalValue;
-            }
-            
-            // Calculate loan amount
-            function calculateLoanAmount() {
-                const totalBudget = parseFloat(document.getElementById('total-budget').value) || 0;
-                const ownCapital = parseFloat(document.getElementById('own-capital').value) || 0;
-                const familyCapital = parseFloat(document.getElementById('family-capital').value) || 0;
-                const loanAmount = Math.max(0, totalBudget - ownCapital - familyCapital);
-                document.getElementById('loan-amount').textContent = loanAmount.toFixed(3);
-                return loanAmount;
-            }
-            
-            // Event listeners for auto calculations
+        }
+
+        function setupAutoCalculations() {
             for (let i = 1; i <= 3; i++) {
                 document.getElementById(`project${i}-area`).addEventListener('input', () => calculateTotalValue(i));
                 document.getElementById(`project${i}-price-per-m2`).addEventListener('input', () => calculateTotalValue(i));
@@ -668,525 +1032,1040 @@
             document.getElementById('total-budget').addEventListener('input', calculateLoanAmount);
             document.getElementById('own-capital').addEventListener('input', calculateLoanAmount);
             document.getElementById('family-capital').addEventListener('input', calculateLoanAmount);
+        }
+
+        function setupEventListeners() {
+            document.getElementById('fixed-loan-rate').addEventListener('input', updateBankComparison);
+            document.getElementById('loan-term-input').addEventListener('input', updateBankComparison);
+            document.getElementById('calculate-btn').addEventListener('click', performCalculations);
+            document.getElementById('export-pdf-btn').addEventListener('click', exportToPDF);
+            document.getElementById('reset-btn').addEventListener('click', resetAll);
+        }
+
+        function setupSimulationSliders() {
+            document.getElementById('sim-interest-rate').addEventListener('input', updateSimulation);
+            document.getElementById('sim-growth-rate').addEventListener('input', updateSimulation);
+            document.getElementById('sim-rental-income').addEventListener('input', updateSimulation);
+        }
+
+        function calculateTotalValue(projectNum) {
+            const area = parseFloat(document.getElementById(`project${projectNum}-area`).value) || 0;
+            const pricePerM2 = parseFloat(document.getElementById(`project${projectNum}-price-per-m2`).value) || 0;
+            const totalValue = (area * pricePerM2) / 1000;
+            document.getElementById(`project${projectNum}-total-value`).textContent = totalValue.toFixed(3);
+            return totalValue;
+        }
+        
+        function calculateLoanAmount() {
+            const totalBudget = parseFloat(document.getElementById('total-budget').value) || 0;
+            const ownCapital = parseFloat(document.getElementById('own-capital').value) || 0;
+            const familyCapital = parseFloat(document.getElementById('family-capital').value) || 0;
+            const loanAmount = Math.max(0, totalBudget - ownCapital - familyCapital);
+            document.getElementById('loan-amount').textContent = loanAmount.toFixed(3);
+            return loanAmount;
+        }
+
+        // Image upload and preview
+        function previewImage(projectName) {
+            const input = document.getElementById(`${projectName}-image-input`);
+            const preview = document.getElementById(`${projectName}-image-preview`);
             
-            // Reset button
-            document.getElementById('reset-btn').addEventListener('click', function() {
-                if (confirm('Bạn có chắc chắn muốn xóa tất cả dữ liệu đã nhập?')) {
-                    const inputs = document.querySelectorAll('input');
-                    inputs.forEach(input => {
-                        if (input.type === 'number' || input.type === 'text') {
-                            input.value = '';
-                        }
-                    });
-                    
-                    // Reset default values
-                    document.getElementById('family-capital').value = '0';
-                    document.getElementById('early-payment-fee').value = '0';
-                    document.getElementById('early-payment-fee-period').value = '0';
-                    document.getElementById('holding-period').value = '5';
-                    document.getElementById('discount-rate').value = '8';
-                    document.getElementById('selling-costs').value = '2';
-                    
-                    for (let i = 1; i <= 3; i++) {
-                        document.getElementById(`project${i}-other-costs`).value = '0';
-                        document.getElementById(`project${i}-conservative-growth`).value = '3';
-                        document.getElementById(`project${i}-base-growth`).value = '5';
-                        document.getElementById(`project${i}-optimistic-growth`).value = '7';
-                        document.getElementById(`project${i}-rental-income`).value = '0';
-                        document.getElementById(`project${i}-operating-costs`).value = '0';
-                        document.getElementById(`project${i}-total-value`).textContent = '0';
-                    }
-                    
-                    document.getElementById('loan-amount').textContent = '0';
-                    document.getElementById('results-container').innerHTML = `
-                        <div class="text-center py-8 text-gray-500">
-                            <i class="fas fa-calculator text-4xl mb-4"></i>
-                            <p>Vui lòng nhập thông tin và nhấn "Tính toán & So sánh" để xem kết quả</p>
-                        </div>
-                    `;
-                    document.getElementById('cash-flow-details').innerHTML = '';
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    projectImages[projectName] = e.target.result;
+                    preview.innerHTML = `<img src="${e.target.result}" class="image-preview" alt="${projectName}">`;
                 }
-            });
-            
-            // Main calculation function
-            document.getElementById('calculate-btn').addEventListener('click', function() {
-                // Validate input
-                const totalBudget = parseFloat(document.getElementById('total-budget').value);
-                const ownCapital = parseFloat(document.getElementById('own-capital').value);
-                
-                if (!totalBudget || !ownCapital) {
-                    alert('Vui lòng nhập đầy đủ thông tin tài chính cá nhân (ngân sách và vốn tự có).');
-                    return;
-                }
-                
-                // Check if at least one project has data
-                let hasProjectData = false;
-                for (let i = 1; i <= 3; i++) {
-                    const area = parseFloat(document.getElementById(`project${i}-area`).value);
-                    const pricePerM2 = parseFloat(document.getElementById(`project${i}-price-per-m2`).value);
-                    if (area && pricePerM2) {
-                        hasProjectData = true;
-                        break;
-                    }
-                }
-                
-                if (!hasProjectData) {
-                    alert('Vui lòng nhập thông tin cho ít nhất một dự án.');
-                    return;
-                }
-                
-                // Get general information
-                const familyCapital = parseFloat(document.getElementById('family-capital').value) || 0;
-                const totalAvailableCapital = ownCapital + familyCapital;
-                const maxLoanAmount = parseFloat(document.getElementById('loan-amount').textContent);
-                
-                const fixedInterestRate = parseFloat(document.getElementById('fixed-interest-rate').value) || 0;
-                const fixedInterestPeriod = parseInt(document.getElementById('fixed-interest-period').value) || 0;
-                const variableInterestRate = parseFloat(document.getElementById('variable-interest-rate').value) || 0;
-                const loanTerm = parseInt(document.getElementById('loan-term').value) || 0;
-                const earlyPaymentFee = parseFloat(document.getElementById('early-payment-fee').value) || 0;
-                const earlyPaymentFeePeriod = parseInt(document.getElementById('early-payment-fee-period').value) || 0;
-                
-                const holdingPeriod = parseInt(document.getElementById('holding-period').value) || 5;
-                const discountRate = parseFloat(document.getElementById('discount-rate').value) || 8;
-                const sellingCosts = parseFloat(document.getElementById('selling-costs').value) || 2;
-                
-                // Data structure to hold project results
-                const projectResults = [];
-                
-                // Calculate for each project with data
-                for (let i = 1; i <= 3; i++) {
-                    const area = parseFloat(document.getElementById(`project${i}-area`).value);
-                    const pricePerM2 = parseFloat(document.getElementById(`project${i}-price-per-m2`).value);
-                    
-                    if (!area || !pricePerM2) continue; // Skip projects without basic data
-                    
-                    const projectName = document.getElementById(`project${i}-name`).value || `Dự án ${i}`;
-                    const totalValue = calculateTotalValue(i);
-                    const otherCosts = parseFloat(document.getElementById(`project${i}-other-costs`).value) || 0;
-                    
-                    // Convert other costs from millions to billions
-                    const otherCostsBillion = otherCosts / 1000;
-                    
-                    // Total initial investment
-                    const totalInitialInvestment = totalValue + otherCostsBillion;
-                    
-                    // Calculate loan for this project
-                    const projectLoanAmount = Math.min(
-                        Math.max(0, totalInitialInvestment - totalAvailableCapital),
-                        maxLoanAmount
-                    );
-                    
-                    // Own capital used for this project
-                    const projectOwnCapital = totalInitialInvestment - projectLoanAmount;
-                    
-                    // Growth scenarios
-                    const conservativeGrowth = parseFloat(document.getElementById(`project${i}-conservative-growth`).value) || 3;
-                    const baseGrowth = parseFloat(document.getElementById(`project${i}-base-growth`).value) || 5;
-                    const optimisticGrowth = parseFloat(document.getElementById(`project${i}-optimistic-growth`).value) || 7;
-                    
-                    // Rental income (if any)
-                    const monthlyRentalIncome = parseFloat(document.getElementById(`project${i}-rental-income`).value) || 0;
-                    const monthlyOperatingCosts = parseFloat(document.getElementById(`project${i}-operating-costs`).value) || 0;
-                    
-                    // Annual net rental income in billions
-                    const annualNetRentalIncome = (monthlyRentalIncome - monthlyOperatingCosts) * 12 / 1000;
-                    
-                    // Calculate total interest paid during holding period
-                    let totalInterestPaid = 0;
-                    let remainingLoan = projectLoanAmount;
-                    
-                    // Calculate estimated selling values for each scenario
-                    const conservativeSaleValue = totalValue * Math.pow((1 + conservativeGrowth / 100), holdingPeriod);
-                    const baseSaleValue = totalValue * Math.pow((1 + baseGrowth / 100), holdingPeriod);
-                    const optimisticSaleValue = totalValue * Math.pow((1 + optimisticGrowth / 100), holdingPeriod);
-                    
-                    // Calculate loan amortization and interest payments
-                    let yearlyInterestPayments = [];
-                    let loanAmortizationSchedule = [];
-                    let cashFlows = [];
-                    
-                    // Initialize cash flow for year 0 (initial investment)
-                    cashFlows.push(-projectOwnCapital);
-                    
-                    if (projectLoanAmount > 0 && loanTerm > 0) {
-                        // Calculate monthly payment (simplified, assuming equal payments)
-                        const monthlyInterestRate = fixedInterestRate / 100 / 12;
-                        const totalPayments = loanTerm * 12;
-                        
-                        let monthlyPayment;
-                        if (monthlyInterestRate > 0) {
-                            monthlyPayment = projectLoanAmount * monthlyInterestRate * 
-                                Math.pow(1 + monthlyInterestRate, totalPayments) / 
-                                (Math.pow(1 + monthlyInterestRate, totalPayments) - 1);
-                        } else {
-                            monthlyPayment = projectLoanAmount / totalPayments;
-                        }
-                        
-                        let currentLoan = projectLoanAmount;
-                        
-                        // Build loan schedule
-                        for (let year = 1; year <= Math.min(holdingPeriod, loanTerm); year++) {
-                            let yearlyInterest = 0;
-                            let yearlyPrincipal = 0;
-                            
-                            for (let month = 1; month <= 12; month++) {
-                                // Check if we need to switch interest rates
-                                let currentMonthlyRate;
-                                if (year <= fixedInterestPeriod) {
-                                    currentMonthlyRate = fixedInterestRate / 100 / 12;
-                                } else {
-                                    currentMonthlyRate = variableInterestRate / 100 / 12;
-                                }
-                                
-                                // Recalculate monthly payment if interest rate changed
-                                if (month === 1 && year > fixedInterestPeriod) {
-                                    const remainingPayments = (loanTerm - year + 1) * 12;
-                                    monthlyPayment = currentLoan * currentMonthlyRate * 
-                                        Math.pow(1 + currentMonthlyRate, remainingPayments) / 
-                                        (Math.pow(1 + currentMonthlyRate, remainingPayments) - 1);
-                                }
-                                
-                                const interestPayment = currentLoan * currentMonthlyRate;
-                                const principalPayment = monthlyPayment - interestPayment;
-                                
-                                yearlyInterest += interestPayment;
-                                yearlyPrincipal += principalPayment;
-                                
-                                currentLoan -= principalPayment;
-                                if (currentLoan < 0) currentLoan = 0;
-                            }
-                            
-                            loanAmortizationSchedule.push({
-                                year: year,
-                                startingBalance: currentLoan + yearlyPrincipal,
-                                yearlyInterest: yearlyInterest,
-                                yearlyPrincipal: yearlyPrincipal,
-                                endingBalance: currentLoan
-                            });
-                            
-                            yearlyInterestPayments.push(yearlyInterest);
-                            totalInterestPaid += yearlyInterest;
-                            
-                            // Annual cash flow = net rental income - yearly mortgage payment
-                            const yearlyMortgagePayment = yearlyInterest + yearlyPrincipal;
-                            const yearCashFlow = annualNetRentalIncome - yearlyMortgagePayment;
-                            
-                            // Add to cash flows array
-                            cashFlows.push(yearCashFlow);
-                        }
-                        
-                        remainingLoan = currentLoan;
-                    } else {
-                        // If no loan, just consider rental income
-                        for (let year = 1; year <= holdingPeriod; year++) {
-                            yearlyInterestPayments.push(0);
-                            cashFlows.push(annualNetRentalIncome);
-                        }
-                        remainingLoan = 0;
-                    }
-                    
-                    // Add final sale in last year's cash flow
-                    if (cashFlows.length > holdingPeriod) {
-                        cashFlows[holdingPeriod] += baseSaleValue * (1 - sellingCosts / 100) - remainingLoan;
-                    } else {
-                        // If we didn't calculate all years (e.g., if loan term < holding period)
-                        while (cashFlows.length < holdingPeriod) {
-                            cashFlows.push(annualNetRentalIncome);
-                        }
-                        cashFlows[holdingPeriod] += baseSaleValue * (1 - sellingCosts / 100) - remainingLoan;
-                    }
-                    
-                    // Calculate IRR
-                    const irr = calculateIRR(cashFlows, 0.1); // Starting guess at 10%
-                    
-                    // Calculate NPV
-                    const npv = calculateNPV(cashFlows, discountRate / 100);
-                    
-                    // Calculate profit for each scenario
-                    const conservativeProfit = conservativeSaleValue * (1 - sellingCosts / 100) - totalInitialInvestment - totalInterestPaid;
-                    const baseProfit = baseSaleValue * (1 - sellingCosts / 100) - totalInitialInvestment - totalInterestPaid;
-                    const optimisticProfit = optimisticSaleValue * (1 - sellingCosts / 100) - totalInitialInvestment - totalInterestPaid;
-                    
-                    // Calculate ROI for each scenario
-                    const conservativeROI = (conservativeProfit / projectOwnCapital) * 100;
-                    const baseROI = (baseProfit / projectOwnCapital) * 100;
-                    const optimisticROI = (optimisticProfit / projectOwnCapital) * 100;
-                    
-                    // Store project results
-                    projectResults.push({
-                        id: i,
-                        name: projectName,
-                        totalInitialInvestment,
-                        projectLoanAmount,
-                        totalInterestPaid,
-                        remainingLoan,
-                        conservativeProfit,
-                        conservativeROI,
-                        baseProfit,
-                        baseROI,
-                        irr: irr * 100, // Convert to percent
-                        npv,
-                        optimisticProfit,
-                        optimisticROI,
-                        loanAmortizationSchedule,
-                        cashFlows,
-                        conservativeSaleValue,
-                        baseSaleValue,
-                        optimisticSaleValue,
-                        annualNetRentalIncome
-                    });
-                }
-                
-                if (projectResults.length === 0) {
-                    alert('Không có dự án nào được nhập đủ thông tin để tính toán.');
-                    return;
-                }
-                
-                // Generate results HTML
-                generateResultsTable(projectResults);
-                generateCashFlowDetails(projectResults);
-                
-                // Switch to results tab
-                document.querySelector('.tab[data-tab="results"]').click();
-            });
-            
-            // Function to calculate NPV
-            function calculateNPV(cashFlows, rate) {
-                let npv = 0;
-                for (let i = 0; i < cashFlows.length; i++) {
-                    npv += cashFlows[i] / Math.pow(1 + rate, i);
-                }
-                return npv;
+                reader.readAsDataURL(input.files[0]);
             }
+        }
+
+        // Bank loan comparison with monthly payment
+        function updateBankComparison() {
+            const loanAmount = parseFloat(document.getElementById('loan-amount').textContent) || 0;
+            const fixedRate = parseFloat(document.getElementById('fixed-loan-rate').value) || 8.5;
+            const loanTerm = parseInt(document.getElementById('loan-term-input').value) || 30;
             
-            // Function to calculate IRR using the Newton-Raphson method
-            function calculateIRR(cashFlows, guess = 0.1) {
-                const maxIterations = 100;
-                const precision = 0.0000001;
-                
-                let rate = guess;
-                
-                for (let i = 0; i < maxIterations; i++) {
-                    let npv = 0;
-                    let derivativeNpv = 0;
-                    
-                    for (let j = 0; j < cashFlows.length; j++) {
-                        npv += cashFlows[j] / Math.pow(1 + rate, j);
-                        if (j > 0) {
-                            derivativeNpv -= j * cashFlows[j] / Math.pow(1 + rate, j + 1);
-                        }
-                    }
-                    
-                    if (Math.abs(npv) < precision) {
-                        return rate;
-                    }
-                    
-                    if (derivativeNpv === 0) {
-                        break;
-                    }
-                    
-                    rate -= npv / derivativeNpv;
-                    
-                    if (rate < -1) {
-                        return -1;
-                    }
-                }
-                
-                return rate;
-            }
-            
-            // Function to generate the results table
-            function generateResultsTable(projectResults) {
-                // Find best values for each metric
-                const bestROIConservative = Math.max(...projectResults.map(p => p.conservativeROI));
-                const bestROIBase = Math.max(...projectResults.map(p => p.baseROI));
-                const bestROIOptimistic = Math.max(...projectResults.map(p => p.optimisticROI));
-                const bestIRR = Math.max(...projectResults.map(p => p.irr));
-                const bestNPV = Math.max(...projectResults.map(p => p.npv));
-                
-                let tableHTML = `
-                    <h3 class="text-xl font-semibold mb-4">So sánh các dự án</h3>
-                    <div class="overflow-x-auto">
-                        <table class="min-w-full">
-                            <thead>
-                                <tr class="bg-gray-100">
-                                    <th>Chỉ số</th>
-                                    ${projectResults.map(project => `<th>${project.name}</th>`).join('')}
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td class="font-semibold bg-gray-50">Tổng đầu tư ban đầu (tỷ VNĐ)</td>
-                                    ${projectResults.map(project => `<td>${project.totalInitialInvestment.toFixed(3)}</td>`).join('')}
-                                </tr>
-                                <tr>
-                                    <td class="font-semibold bg-gray-50">Số tiền vay (tỷ VNĐ)</td>
-                                    ${projectResults.map(project => `<td>${project.projectLoanAmount.toFixed(3)}</td>`).join('')}
-                                </tr>
-                                <tr>
-                                    <td class="font-semibold bg-gray-50">Tổng lãi vay phải trả (tỷ VNĐ)</td>
-                                    ${projectResults.map(project => `<td>${project.totalInterestPaid.toFixed(3)}</td>`).join('')}
-                                </tr>
-                                <tr>
-                                    <td class="font-semibold bg-indigo-50" colspan="${projectResults.length + 1}">Kịch bản Thận trọng</td>
-                                </tr>
-                                <tr>
-                                    <td class="font-semibold bg-gray-50">Giá trị bán dự kiến (tỷ VNĐ)</td>
-                                    ${projectResults.map(project => `<td>${project.conservativeSaleValue.toFixed(3)}</td>`).join('')}
-                                </tr>
-                                <tr>
-                                    <td class="font-semibold bg-gray-50">Lợi nhuận ròng (tỷ VNĐ)</td>
-                                    ${projectResults.map(project => `<td>${project.conservativeProfit.toFixed(3)}</td>`).join('')}
-                                </tr>
-                                <tr>
-                                    <td class="font-semibold bg-gray-50">ROI trên vốn tự có (%)</td>
-                                    ${projectResults.map(project => `
-                                        <td class="${project.conservativeROI === bestROIConservative ? 'best-value' : ''}">
-                                            ${project.conservativeROI.toFixed(2)}%
-                                        </td>
-                                    `).join('')}
-                                </tr>
-                                <tr>
-                                    <td class="font-semibold bg-indigo-50" colspan="${projectResults.length + 1}">Kịch bản Cơ sở</td>
-                                </tr>
-                                <tr>
-                                    <td class="font-semibold bg-gray-50">Giá trị bán dự kiến (tỷ VNĐ)</td>
-                                    ${projectResults.map(project => `<td>${project.baseSaleValue.toFixed(3)}</td>`).join('')}
-                                </tr>
-                                <tr>
-                                    <td class="font-semibold bg-gray-50">Lợi nhuận ròng (tỷ VNĐ)</td>
-                                    ${projectResults.map(project => `<td>${project.baseProfit.toFixed(3)}</td>`).join('')}
-                                </tr>
-                                <tr>
-                                    <td class="font-semibold bg-gray-50">ROI trên vốn tự có (%)</td>
-                                    ${projectResults.map(project => `
-                                        <td class="${project.baseROI === bestROIBase ? 'best-value' : ''}">
-                                            ${project.baseROI.toFixed(2)}%
-                                        </td>
-                                    `).join('')}
-                                </tr>
-                                <tr>
-                                    <td class="font-semibold bg-gray-50">IRR (%)</td>
-                                    ${projectResults.map(project => `
-                                        <td class="${project.irr === bestIRR ? 'best-value' : ''}">
-                                            ${project.irr.toFixed(2)}%
-                                        </td>
-                                    `).join('')}
-                                </tr>
-                                <tr>
-                                    <td class="font-semibold bg-gray-50">NPV (tỷ VNĐ)</td>
-                                    ${projectResults.map(project => `
-                                        <td class="${project.npv === bestNPV ? 'best-value' : ''}">
-                                            ${project.npv.toFixed(3)}
-                                        </td>
-                                    `).join('')}
-                                </tr>
-                                <tr>
-                                    <td class="font-semibold bg-indigo-50" colspan="${projectResults.length + 1}">Kịch bản Tích cực</td>
-                                </tr>
-                                <tr>
-                                    <td class="font-semibold bg-gray-50">Giá trị bán dự kiến (tỷ VNĐ)</td>
-                                    ${projectResults.map(project => `<td>${project.optimisticSaleValue.toFixed(3)}</td>`).join('')}
-                                </tr>
-                                <tr>
-                                    <td class="font-semibold bg-gray-50">Lợi nhuận ròng (tỷ VNĐ)</td>
-                                    ${projectResults.map(project => `<td>${project.optimisticProfit.toFixed(3)}</td>`).join('')}
-                                </tr>
-                                <tr>
-                                    <td class="font-semibold bg-gray-50">ROI trên vốn tự có (%)</td>
-                                    ${projectResults.map(project => `
-                                        <td class="${project.optimisticROI === bestROIOptimistic ? 'best-value' : ''}">
-                                            ${project.optimisticROI.toFixed(2)}%
-                                        </td>
-                                    `).join('')}
-                                </tr>
-                            </tbody>
-                        </table>
+            if (loanAmount === 0) {
+                document.getElementById('bank-comparison-results').innerHTML = `
+                    <div class="text-center text-gray-500 py-8">
+                        <i class="fas fa-info-circle text-4xl mb-3"></i>
+                        <p>Vui lòng nhập thông tin ngân sách để xem so sánh vay</p>
                     </div>
                 `;
-                
-                document.getElementById('results-container').innerHTML = tableHTML;
+                return;
+            }
+
+            const banks = [
+                { name: 'VietcomBank', rate: fixedRate },
+                { name: 'BIDV', rate: fixedRate + 0.2 },
+                { name: 'Vietinbank', rate: fixedRate + 0.1 },
+                { name: 'Agribank', rate: fixedRate - 0.1 },
+                { name: 'Techcombank', rate: fixedRate + 0.3 }
+            ];
+
+            let html = '<div class="overflow-x-auto"><table class="w-full"><thead><tr><th>Ngân hàng</th><th>Lãi suất</th><th>Kỳ hạn</th><th>Số tiền vay</th><th>Trả góp/tháng</th></tr></thead><tbody>';
+            
+            banks.forEach(bank => {
+                const monthlyPayment = calculateMonthlyPayment(loanAmount * 1000, bank.rate, loanTerm);
+                html += `
+                    <tr>
+                        <td class="font-bold text-indigo-700">${bank.name}</td>
+                        <td>${bank.rate.toFixed(2)}%/năm</td>
+                        <td>${loanTerm} năm</td>
+                        <td class="font-bold">${loanAmount.toFixed(3)} tỷ</td>
+                        <td class="text-green-600 font-bold">${monthlyPayment.toFixed(1)} triệu</td>
+                    </tr>
+                `;
+            });
+            
+            html += '</tbody></table></div>';
+            html += `
+                <div class="mt-6 p-4 bg-blue-50 rounded-lg">
+                    <p class="text-sm text-gray-700">
+                        <i class="fas fa-info-circle mr-2"></i>
+                        <strong>Lưu ý:</strong> Kỳ hạn vay tối đa ${loanTerm} năm để số tiền trả hàng tháng nhỏ nhất. 
+                        Số tiền trả góp đã bao gồm cả gốc và lãi.
+                    </p>
+                </div>
+            `;
+            
+            document.getElementById('bank-comparison-results').innerHTML = html;
+        }
+
+        function calculateMonthlyPayment(principal, annualRate, years) {
+            // principal: số tiền vay (triệu VNĐ)
+            // annualRate: lãi suất năm (%)
+            // years: số năm
+            
+            const monthlyRate = annualRate / 100 / 12; // Lãi suất tháng
+            const numPayments = years * 12; // Tổng số tháng
+            
+            if (monthlyRate === 0) {
+                return principal / numPayments; // Không lãi → chia đều
             }
             
-            // Function to generate cash flow details
-            function generateCashFlowDetails(projectResults) {
-                let detailsHTML = '';
-                
-                projectResults.forEach(project => {
-                    detailsHTML += `
-                        <div class="mb-8">
-                            <h4 class="text-lg font-semibold mb-2">${project.name} - Chi tiết dòng tiền</h4>
-                            <div class="overflow-x-auto">
-                                <table class="min-w-full mb-4">
-                                    <thead>
-                                        <tr class="bg-gray-100">
-                                            <th>Năm</th>
-                                            <th>Dòng tiền (tỷ VNĐ)</th>
-                                            <th>Chi phí lãi vay (tỷ VNĐ)</th>
-                                            <th>Thu nhập cho thuê ròng (tỷ VNĐ)</th>
-                                            <th>Dư nợ gốc còn lại (tỷ VNĐ)</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td>0 (Đầu tư ban đầu)</td>
-                                            <td>${project.cashFlows[0].toFixed(3)}</td>
-                                            <td>-</td>
-                                            <td>-</td>
-                                            <td>${project.projectLoanAmount.toFixed(3)}</td>
-                                        </tr>
-                    `;
-                    
-                    const holdingPeriod = parseInt(document.getElementById('holding-period').value) || 5;
-                    
-                    for (let year = 1; year <= holdingPeriod; year++) {
-                        const loanData = project.loanAmortizationSchedule.find(item => item.year === year);
-                        const yearlyInterest = loanData ? loanData.yearlyInterest : 0;
-                        const endingBalance = loanData ? loanData.endingBalance : 
-                                            (year === 1 ? project.projectLoanAmount : (year > project.loanAmortizationSchedule.length ? 0 : "-"));
-                        
-                        detailsHTML += `
-                            <tr>
-                                <td>${year}${year === holdingPeriod ? ' (Bán)' : ''}</td>
-                                <td>${project.cashFlows[year] ? project.cashFlows[year].toFixed(3) : '-'}</td>
-                                <td>${yearlyInterest ? yearlyInterest.toFixed(3) : '0.000'}</td>
-                                <td>${project.annualNetRentalIncome.toFixed(3)}</td>
-                                <td>${typeof endingBalance === 'number' ? endingBalance.toFixed(3) : endingBalance}</td>
-                            </tr>
-                        `;
+            // Công thức PMT chuẩn (Excel)
+            // monthlyPayment = P * [r(1+r)^n] / [(1+r)^n - 1]
+            const x = Math.pow(1 + monthlyRate, numPayments);
+            const payment = principal * (monthlyRate * x) / (x - 1);
+            
+            return payment; // Trả về đơn vị TRIỆU VNĐ
+        }
+
+        // Simulation functions
+        function updateSimulation() {
+            const interestRate = parseFloat(document.getElementById('sim-interest-rate').value);
+            const growthRate = parseFloat(document.getElementById('sim-growth-rate').value);
+            const rentalIncome = parseFloat(document.getElementById('sim-rental-income').value);
+            
+            document.getElementById('sim-interest-display').textContent = interestRate.toFixed(1) + '%';
+            document.getElementById('sim-growth-display').textContent = growthRate.toFixed(0) + '%';
+            document.getElementById('sim-rental-display').textContent = rentalIncome.toFixed(0) + ' triệu';
+            
+            const initialInvestment = 2;
+            const years = 5;
+            const futureValue = initialInvestment * Math.pow(1 + growthRate / 100, years);
+            const rentalTotal = (rentalIncome * 12 * years) / 1000;
+            const profit = futureValue + rentalTotal - initialInvestment;
+            const roi = (profit / initialInvestment) * 100;
+            
+            document.getElementById('sim-roi').textContent = roi.toFixed(1);
+            document.getElementById('sim-profit').textContent = profit.toFixed(2);
+            document.getElementById('sim-rental-year').textContent = (rentalIncome * 12).toFixed(0);
+            
+            updateSimulationChart(growthRate, rentalIncome);
+        }
+
+        function updateSimulationChart(growthRate, rentalIncome) {
+            const ctx = document.getElementById('simulationChart');
+            if (!ctx) return;
+            
+            if (simulationChart) simulationChart.destroy();
+            
+            const years = [0, 1, 2, 3, 4, 5];
+            const values = years.map(year => {
+                const appreciation = 2 * Math.pow(1 + growthRate / 100, year);
+                const rental = (rentalIncome * 12 * year) / 1000;
+                return appreciation + rental;
+            });
+            
+            simulationChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: years.map(y => `Năm ${y}`),
+                    datasets: [{
+                        label: 'Giá trị tích lũy (tỷ VNĐ)',
+                        data: values,
+                        borderColor: '#4f46e5',
+                        backgroundColor: 'rgba(79, 70, 229, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: true },
+                        title: { display: true, text: 'Dự báo Giá trị Đầu tư theo Thời gian' }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { callback: value => value.toFixed(2) + ' tỷ' }
+                        }
                     }
-                    
-                    detailsHTML += `
-                                    </tbody>
-                                </table>
-                            </div>
-                            
-                            <div class="mt-4">
-                                <p class="mb-2"><strong>IRR:</strong> ${project.irr.toFixed(2)}%</p>
-                                <p class="mb-2"><strong>NPV:</strong> ${project.npv.toFixed(3)} tỷ VNĐ</p>
-                                <p class="mb-4"><strong>Tổng vốn đầu tư tự có:</strong> ${(project.totalInitialInvestment - project.projectLoanAmount).toFixed(3)} tỷ VNĐ</p>
-                                
-                                <div class="bg-blue-50 p-3 rounded">
-                                    <p class="font-semibold">Phân tích:</p>
-                                    <p>
-                                        Dự án "${project.name}" có ROI ${project.baseROI.toFixed(2)}% trong kịch bản cơ sở sau ${holdingPeriod} năm.
-                                        ${
-                                            project.npv > 0 
-                                            ? `NPV dương (${project.npv.toFixed(3)} tỷ) cho thấy đây là dự án có tiềm năng sinh lời tốt với tỷ lệ chiết khấu hiện tại.` 
-                                            : `NPV âm (${project.npv.toFixed(3)} tỷ) cho thấy dự án có thể không đạt được lợi nhuận kỳ vọng với tỷ lệ chiết khấu hiện tại.`
-                                        }
-                                    </p>
+                }
+            });
+        }
+
+        // Scenario comparison
+        function showScenario(type) {
+            const resultsDiv = document.getElementById('scenario-results');
+            
+            if (calculatedProjects.length === 0) {
+                resultsDiv.innerHTML = `
+                    <div class="scenario-card text-center">
+                        <i class="fas fa-exclamation-triangle text-4xl text-yellow-500 mb-4"></i>
+                        <p class="text-lg">Vui lòng tính toán dự án trước khi so sánh kịch bản!</p>
+                        <button onclick="document.querySelector('[data-tab=\\'results\\']').click();" 
+                                class="mt-4 bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700">
+                            <i class="fas fa-calculator mr-2"></i>Đi đến Tính toán
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+            
+            let html = '<div class="scenario-card">';
+            
+            if (type === 'live') {
+                // Get priority selections
+                const priorityArea = document.getElementById('priority-area').checked;
+                const priorityPrice = document.getElementById('priority-price').checked;
+                const priorityLocation = document.getElementById('priority-location').checked;
+                const priorityRental = document.getElementById('priority-rental').checked;
+                
+                html += `
+                    <h3 class="text-2xl font-bold mb-4 text-blue-600"><i class="fas fa-home mr-2"></i>Kịch bản: Mua để Ở</h3>
+                    <p class="mb-4">Ưu tiên theo lựa chọn của bạn</p>
+                    <div class="mb-4 p-3 bg-blue-50 rounded-lg">
+                        <strong>Yếu tố đang ưu tiên:</strong>
+                        ${priorityArea ? '<span class="ml-2 bg-blue-200 px-2 py-1 rounded text-sm">Diện tích</span>' : ''}
+                        ${priorityPrice ? '<span class="ml-2 bg-blue-200 px-2 py-1 rounded text-sm">Giá trị</span>' : ''}
+                        ${priorityLocation ? '<span class="ml-2 bg-blue-200 px-2 py-1 rounded text-sm">Vị trí</span>' : ''}
+                        ${priorityRental ? '<span class="ml-2 bg-blue-200 px-2 py-1 rounded text-sm">Cho thuê</span>' : ''}
+                    </div>
+                    <div class="space-y-4">
+                `;
+                
+                calculatedProjects.forEach(project => {
+                    const score = calculateLivingScore(project, priorityArea, priorityPrice, priorityLocation, priorityRental);
+                    html += `
+                        <div class="bg-blue-50 p-4 rounded-lg">
+                            <h4 class="font-bold text-lg mb-2">${project.name}</h4>
+                            <div class="grid md:grid-cols-4 gap-4">
+                                <div>
+                                    <div class="text-sm text-gray-600">Điểm phù hợp</div>
+                                    <div class="text-2xl font-bold text-blue-600">${score}/100</div>
+                                </div>
+                                <div>
+                                    <div class="text-sm text-gray-600">Diện tích</div>
+                                    <div class="text-xl font-semibold">${project.area} m²</div>
+                                </div>
+                                <div>
+                                    <div class="text-sm text-gray-600">Giá trị</div>
+                                    <div class="text-xl font-semibold">${project.totalValue.toFixed(2)} tỷ</div>
+                                </div>
+                                <div>
+                                    <div class="text-sm text-gray-600">Giá thuê</div>
+                                    <div class="text-xl font-semibold">${project.rentalIncome} tr/th</div>
                                 </div>
                             </div>
                         </div>
-                        <hr class="my-6 border-gray-300">
                     `;
                 });
+            } else if (type === 'invest') {
+                html += `
+                    <h3 class="text-2xl font-bold mb-4 text-green-600"><i class="fas fa-chart-line mr-2"></i>Kịch bản: Mua để Đầu tư</h3>
+                    <p class="mb-6">Ưu tiên: ROI, NPV, IRR cao nhất</p>
+                    <div class="space-y-4">
+                `;
                 
-                document.getElementById('cash-flow-details').innerHTML = detailsHTML;
+                const sorted = [...calculatedProjects].sort((a, b) => b.roi - a.roi);
+                sorted.forEach((project, index) => {
+                    html += `
+                        <div class="bg-green-50 p-4 rounded-lg ${index === 0 ? 'border-2 border-green-500' : ''}">
+                            <h4 class="font-bold text-lg mb-2">
+                                ${index === 0 ? '<i class="fas fa-crown text-yellow-500 mr-2"></i>' : ''}
+                                ${project.name}
+                            </h4>
+                            <div class="grid md:grid-cols-4 gap-4">
+                                <div>
+                                    <div class="text-sm text-gray-600">ROI</div>
+                                    <div class="text-2xl font-bold text-green-600">${project.roi.toFixed(1)}%</div>
+                                </div>
+                                <div>
+                                    <div class="text-sm text-gray-600">NPV</div>
+                                    <div class="text-xl font-semibold">${project.npv.toFixed(2)} tỷ</div>
+                                </div>
+                                <div>
+                                    <div class="text-sm text-gray-600">IRR</div>
+                                    <div class="text-xl font-semibold">${project.irr.toFixed(1)}%</div>
+                                </div>
+                                <div>
+                                    <div class="text-sm text-gray-600">Lợi nhuận</div>
+                                    <div class="text-xl font-semibold">${project.profit.toFixed(2)} tỷ</div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+            } else if (type === 'hybrid') {
+                html += `
+                    <h3 class="text-2xl font-bold mb-4 text-purple-600"><i class="fas fa-balance-scale mr-2"></i>Kịch bản: Kết hợp</h3>
+                    <p class="mb-6">Cân bằng giữa chất lượng sống và tiềm năng đầu tư</p>
+                    <div class="space-y-4">
+                `;
+                
+                calculatedProjects.forEach(project => {
+                    const livingScore = calculateLivingScore(project, true, true, false, false);
+                    const investScore = Math.min(100, (project.roi / 50) * 100);
+                    const hybridScore = (livingScore + investScore) / 2;
+                    
+                    html += `
+                        <div class="bg-purple-50 p-4 rounded-lg">
+                            <h4 class="font-bold text-lg mb-2">${project.name}</h4>
+                            <div class="grid md:grid-cols-4 gap-4">
+                                <div>
+                                    <div class="text-sm text-gray-600">Điểm tổng hợp</div>
+                                    <div class="text-2xl font-bold text-purple-600">${hybridScore.toFixed(0)}/100</div>
+                                </div>
+                                <div>
+                                    <div class="text-sm text-gray-600">Điểm ở</div>
+                                    <div class="text-xl font-semibold">${livingScore}/100</div>
+                                </div>
+                                <div>
+                                    <div class="text-sm text-gray-600">ROI</div>
+                                    <div class="text-xl font-semibold">${project.roi.toFixed(1)}%</div>
+                                </div>
+                                <div>
+                                    <div class="text-sm text-gray-600">Thu thuê/năm</div>
+                                    <div class="text-xl font-semibold">${(project.rentalIncome * 12).toFixed(0)} tr</div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
             }
-        });
+            
+            html += '</div></div>';
+            resultsDiv.innerHTML = html;
+        }
+
+        function calculateLivingScore(project, priorityArea, priorityPrice, priorityLocation, priorityRental) {
+            let score = 0;
+            let totalPriorities = 0;
+            
+            if (priorityArea) {
+                totalPriorities++;
+                if (project.area >= 70) score += 25;
+                else if (project.area >= 50) score += 15;
+            }
+            
+            if (priorityPrice) {
+                totalPriorities++;
+                if (project.totalValue < 5) score += 25;
+                else if (project.totalValue < 7) score += 15;
+            }
+            
+            if (priorityLocation) {
+                totalPriorities++;
+                score += 20; // Default score for location
+            }
+            
+            if (priorityRental) {
+                totalPriorities++;
+                if (project.rentalIncome >= 20) score += 25;
+                else if (project.rentalIncome >= 15) score += 15;
+            }
+            
+            return totalPriorities > 0 ? Math.min(100, Math.round((score / totalPriorities) * (100/25))) : 50;
+        }
+
+        // Main calculation function
+        function performCalculations() {
+            const totalBudget = parseFloat(document.getElementById('total-budget').value);
+            const ownCapital = parseFloat(document.getElementById('own-capital').value);
+            
+            if (!totalBudget || !ownCapital) {
+                alert('Vui lòng nhập đầy đủ thông tin tài chính cá nhân!');
+                return;
+            }
+            
+            let hasProjectData = false;
+            for (let i = 1; i <= 3; i++) {
+                const area = parseFloat(document.getElementById(`project${i}-area`).value);
+                const pricePerM2 = parseFloat(document.getElementById(`project${i}-price-per-m2`).value);
+                if (area && pricePerM2) {
+                    hasProjectData = true;
+                    break;
+                }
+            }
+            
+            if (!hasProjectData) {
+                alert('Vui lòng nhập thông tin cho ít nhất một dự án!');
+                return;
+            }
+            
+            const familyCapital = parseFloat(document.getElementById('family-capital').value) || 0;
+            const holdingPeriod = parseInt(document.getElementById('holding-period').value) || 5;
+            const discountRate = parseFloat(document.getElementById('discount-rate').value) || 12;
+            const sellingCosts = parseFloat(document.getElementById('selling-costs').value) || 2;
+            const fixedRate = parseFloat(document.getElementById('fixed-loan-rate').value) || 8.5;
+            const loanTerm = parseInt(document.getElementById('loan-term-input').value) || 30;
+            
+            calculatedProjects = [];
+            const projectData = [];
+            
+            // Display project images
+            displayProjectImages();
+            
+            for (let i = 1; i <= 3; i++) {
+                const area = parseFloat(document.getElementById(`project${i}-area`).value);
+                if (!area) continue;
+                
+                const name = document.getElementById(`project${i}-name`).value || `Dự án ${i}`;
+                const pricePerM2 = parseFloat(document.getElementById(`project${i}-price-per-m2`).value) || 0;
+                const totalValue = (area * pricePerM2) / 1000;
+                const otherCosts = (parseFloat(document.getElementById(`project${i}-other-costs`).value) || 0) / 1000;
+                const rentalIncome = parseFloat(document.getElementById(`project${i}-rental-income`).value) || 0;
+                const operatingCosts = parseFloat(document.getElementById(`project${i}-operating-costs`).value) || 0;
+                const baseGrowth = parseFloat(document.getElementById(`project${i}-base-growth`).value) || 12;
+                
+                const totalInvestment = totalValue + otherCosts;
+                const loanAmount = Math.max(0, Math.min(totalInvestment * 0.8, totalInvestment - ownCapital - familyCapital));
+                const equity = totalInvestment - loanAmount;
+                
+                // Calculate future values
+                const futureValue = totalValue * Math.pow(1 + baseGrowth / 100, holdingPeriod);
+                const futureValue2Years = totalValue * Math.pow(1 + baseGrowth / 100, 2);
+                const saleValue = futureValue * (1 - sellingCosts / 100);
+                
+                // Calculate cash flows (IMPROVED FORMULA)
+                const cashFlows = [];
+                const annualNetRental = ((rentalIncome - operatingCosts) * 12) / 1000; // billions
+                const monthlyInterest = (loanAmount * 1000 * (fixedRate / 100 / 12)); // millions
+                const monthlyPayment = calculateMonthlyPayment(loanAmount * 1000, fixedRate, loanTerm);
+                const annualLoanPayment = (monthlyPayment * 12) / 1000; // billions
+                
+                // Year 0: Initial equity investment (negative)
+                cashFlows.push(-equity);
+                
+                // Years 1 to holdingPeriod-1: Annual net cash flow
+                for (let year = 1; year < holdingPeriod; year++) {
+                    const netCashFlow = annualNetRental - annualLoanPayment;
+                    cashFlows.push(netCashFlow);
+                }
+                
+                // Final year: Net rental + Sale proceeds - Loan payoff
+                const remainingLoan = loanAmount; // Simplified: assuming interest-only or balloon payment
+                const finalCashFlow = annualNetRental + saleValue - remainingLoan;
+                cashFlows.push(finalCashFlow);
+                
+                // Calculate NPV
+                let npv = 0;
+                for (let t = 0; t < cashFlows.length; t++) {
+                    npv += cashFlows[t] / Math.pow(1 + discountRate / 100, t);
+                }
+                
+                // Calculate IRR and other metrics
+                const totalCashIn = saleValue + (annualNetRental * holdingPeriod);
+                const totalCashOut = equity + loanAmount;
+                const profit = totalCashIn - totalCashOut;
+                const roi = (profit / equity) * 100;
+                const irr = (Math.pow(totalCashIn / totalCashOut, 1 / holdingPeriod) - 1) * 100;
+                
+                // Calculate LTV
+                const ltv = (loanAmount / totalInvestment) * 100;
+                
+                // Calculate payback period
+                let cumulativeCashFlow = -equity;
+                let paybackPeriod = holdingPeriod;
+                for (let year = 1; year < cashFlows.length; year++) {
+                    cumulativeCashFlow += cashFlows[year];
+                    if (cumulativeCashFlow >= 0) {
+                        paybackPeriod = year;
+                        break;
+                    }
+                }
+                
+                projectData.push({
+                    name, area, totalValue, totalInvestment, equity, loanAmount,
+                    roi, npv, irr, profit, saleValue, futureValue2Years, rentalIncome,
+                    baseGrowth, cashFlows, ltv, paybackPeriod
+                });
+                
+                calculatedProjects.push({
+                    name, area, totalValue, roi, npv, irr, profit, rentalIncome, ltv, paybackPeriod
+                });
+            }
+            
+            displayResults(projectData);
+            displayProjectScores(projectData);
+            displayRecommendations(projectData);
+            displayCashFlows(projectData, holdingPeriod);
+            updateBankComparison();
+            document.querySelector('[data-tab="results"]').click();
+        }
+
+        function displayProjectImages() {
+            const imageDisplay = document.getElementById('project-images-display');
+            let html = '<div class="grid md:grid-cols-3 gap-6 mb-8">';
+            
+            for (let i = 1; i <= 3; i++) {
+                const projectName = document.getElementById(`project${i}-name`).value || `Dự án ${i}`;
+                const image = projectImages[`project${i}`];
+                
+                if (image) {
+                    html += `
+                        <div class="scenario-card">
+                            <h4 class="font-bold text-lg mb-3">${projectName}</h4>
+                            <img src="${image}" class="image-preview w-full" alt="${projectName}">
+                        </div>
+                    `;
+                }
+            }
+            
+            html += '</div>';
+            imageDisplay.innerHTML = html;
+        }
+
+        function displayResults(projectData) {
+            let html = '<div class="overflow-x-auto"><table class="w-full"><thead><tr>';
+            html += '<th>Chỉ số</th>';
+            projectData.forEach(project => {
+                html += `<th>${project.name}</th>`;
+            });
+            html += '</tr></thead><tbody>';
+            
+            const metrics = [
+                { label: 'Tổng đầu tư', key: 'totalInvestment', suffix: ' tỷ', decimals: 3 },
+                { label: 'Vốn tự có', key: 'equity', suffix: ' tỷ', decimals: 3 },
+                { label: 'Vay ngân hàng', key: 'loanAmount', suffix: ' tỷ', decimals: 3 },
+                { label: 'LTV (%)', key: 'ltv', suffix: '%', decimals: 1 },
+                { label: 'ROI', key: 'roi', suffix: '%', decimals: 1, highlight: true },
+                { label: 'NPV', key: 'npv', suffix: ' tỷ', decimals: 2, highlight: true },
+                { label: 'IRR', key: 'irr', suffix: '%', decimals: 1, highlight: true },
+                { label: 'Lợi nhuận ròng', key: 'profit', suffix: ' tỷ', decimals: 2 },
+                { label: 'Giá bán ước tính', key: 'saleValue', suffix: ' tỷ', decimals: 2 },
+                { label: 'Giá bán sau 2 năm', key: 'futureValue2Years', suffix: ' tỷ', decimals: 2 },
+                { label: 'Thời gian hòa vốn', key: 'paybackPeriod', suffix: ' năm', decimals: 0 }
+            ];
+            
+            metrics.forEach(metric => {
+                html += `<tr><td class="font-semibold">${metric.label}</td>`;
+                let bestValue = null;
+                let bestIndex = -1;
+                
+                if (metric.highlight) {
+                    projectData.forEach((project, index) => {
+                        if (bestValue === null || project[metric.key] > bestValue) {
+                            bestValue = project[metric.key];
+                            bestIndex = index;
+                        }
+                    });
+                }
+                
+                projectData.forEach((project, index) => {
+                    const value = project[metric.key].toFixed(metric.decimals);
+                    const className = (metric.highlight && index === bestIndex) ? 'best-value' : '';
+                    html += `<td class="${className}">${value}${metric.suffix}</td>`;
+                });
+                
+                html += '</tr>';
+            });
+            
+            html += '</tbody></table></div>';
+            document.getElementById('results-container').innerHTML = html;
+        }
+
+        function displayProjectScores(projectData) {
+            document.getElementById('project-scores-section').style.display = 'block';
+            let html = '';
+            
+            projectData.forEach(project => {
+                const score = calculateProjectScore(project);
+                const scoreClass = score >= 80 ? 'score-excellent' : score >= 65 ? 'score-good' : score >= 50 ? 'score-fair' : 'score-poor';
+                const scoreLabel = score >= 80 ? 'Xuất sắc' : score >= 65 ? 'Tốt' : score >= 50 ? 'Khá' : 'Cần cân nhắc';
+                
+                html += `
+                    <div class="scenario-card text-center">
+                        <h4 class="font-bold text-lg mb-3">${project.name}</h4>
+                        <div class="score-badge ${scoreClass} mb-3">${score}/100</div>
+                        <p class="text-gray-600">${scoreLabel}</p>
+                        <div class="mt-4 text-sm text-left">
+                            <div class="flex justify-between mb-2">
+                                <span>ROI:</span>
+                                <span class="font-semibold">${project.roi.toFixed(1)}%</span>
+                            </div>
+                            <div class="flex justify-between mb-2">
+                                <span>IRR:</span>
+                                <span class="font-semibold">${project.irr.toFixed(1)}%</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>LTV:</span>
+                                <span class="font-semibold">${project.ltv.toFixed(1)}%</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            document.getElementById('project-scores').innerHTML = html;
+        }
+
+        function calculateProjectScore(project) {
+            let score = 50; // Base score
+            
+            // ROI scoring (max 25 points)
+            if (project.roi >= 50) score += 25;
+            else if (project.roi >= 30) score += 20;
+            else if (project.roi >= 20) score += 15;
+            else if (project.roi >= 10) score += 10;
+            
+            // IRR scoring (max 15 points)
+            if (project.irr >= 15) score += 15;
+            else if (project.irr >= 12) score += 12;
+            else if (project.irr >= 10) score += 10;
+            else if (project.irr >= 8) score += 7;
+            
+            // LTV scoring (max 10 points - lower is better)
+            if (project.ltv < 50) score += 10;
+            else if (project.ltv < 65) score += 8;
+            else if (project.ltv < 80) score += 5;
+            
+            return Math.min(100, Math.round(score));
+        }
+
+        function displayRecommendations(projectData) {
+            document.getElementById('recommendations-section').style.display = 'block';
+            
+            const bestROI = projectData.reduce((best, proj) => proj.roi > best.roi ? proj : best);
+            const bestNPV = projectData.reduce((best, proj) => proj.npv > best.npv ? proj : best);
+            const lowestLTV = projectData.reduce((best, proj) => proj.ltv < best.ltv ? proj : best);
+            
+            let html = `
+                <div class="recommendation-box">
+                    <h4 class="font-bold text-lg mb-3"><i class="fas fa-trophy text-yellow-500 mr-2"></i>Dự án Đề xuất Hàng đầu</h4>
+                    <p class="mb-2"><strong>${bestROI.name}</strong> có ROI cao nhất (<strong>${bestROI.roi.toFixed(1)}%</strong>), phù hợp cho mục tiêu sinh lời cao.</p>
+                    <p class="mb-2"><strong>${bestNPV.name}</strong> có NPV tốt nhất (<strong>${bestNPV.npv.toFixed(2)} tỷ</strong>), tạo giá trị thực cao nhất.</p>
+                    <p><strong>${lowestLTV.name}</strong> có LTV thấp nhất (<strong>${lowestLTV.ltv.toFixed(1)}%</strong>), rủi ro tài chính thấp nhất.</p>
+                </div>
+            `;
+            
+            // Risk assessment
+            projectData.forEach(project => {
+                let riskLevel = 'THẤP';
+                let riskColor = 'green';
+                let recommendations = [];
+                
+                if (project.ltv > 80) {
+                    riskLevel = 'CAO';
+                    riskColor = 'red';
+                    recommendations.push('Tỷ lệ vay cao, cần tăng vốn tự có');
+                } else if (project.ltv > 65) {
+                    riskLevel = 'TRUNG BÌNH';
+                    riskColor = 'yellow';
+                    recommendations.push('Cân nhắc tăng vốn tự có để giảm rủi ro');
+                }
+                
+                if (project.roi < 15) {
+                    recommendations.push('ROI thấp, nên xem xét các phương án đầu tư khác');
+                }
+                
+                if (project.paybackPeriod >= 5) {
+                    recommendations.push('Thời gian hòa vốn dài, phù hợp đầu tư dài hạn');
+                }
+                
+                if (recommendations.length > 0) {
+                    html += `
+                        <div class="recommendation-box mt-4" style="border-left-color: ${riskColor === 'red' ? '#ef4444' : riskColor === 'yellow' ? '#f59e0b' : '#10b981'};">
+                            <h4 class="font-bold mb-2">${project.name} - Rủi ro: <span style="color: ${riskColor === 'red' ? '#ef4444' : riskColor === 'yellow' ? '#f59e0b' : '#10b981'}">${riskLevel}</span></h4>
+                            <ul class="list-disc list-inside space-y-1">
+                                ${recommendations.map(r => `<li>${r}</li>`).join('')}
+                            </ul>
+                        </div>
+                    `;
+                }
+            });
+            
+            document.getElementById('recommendations-content').innerHTML = html;
+        }
+
+        function displayCashFlows(projectData, holdingPeriod) {
+            document.getElementById('cash-flow-section').style.display = 'block';
+            
+            let html = '<div class="overflow-x-auto"><table class="w-full"><thead><tr><th>Năm</th>';
+            projectData.forEach(project => {
+                html += `<th>${project.name}</th>`;
+            });
+            html += '</tr></thead><tbody>';
+            
+            for (let year = 0; year <= holdingPeriod; year++) {
+                html += `<tr><td class="font-semibold">Năm ${year}</td>`;
+                projectData.forEach(project => {
+                    const cashFlow = project.cashFlows[year] || 0;
+                    const color = cashFlow >= 0 ? 'text-green-600' : 'text-red-600';
+                    html += `<td class="${color} font-semibold">${cashFlow.toFixed(2)} tỷ</td>`;
+                });
+                html += '</tr>';
+            }
+            
+            html += '</tbody></table></div>';
+            html += `
+                <div class="mt-4 p-4 bg-blue-50 rounded-lg">
+                    <p class="text-sm text-gray-700">
+                        <i class="fas fa-info-circle mr-2"></i>
+                        <strong>Công thức tính:</strong> Dòng tiền = Thu nhập thuê ròng - Trả nợ vay hàng năm. 
+                        Năm 0 là vốn đầu tư ban đầu (âm). Năm cuối cùng bao gồm tiền bán BĐS trừ nợ còn lại.
+                    </p>
+                </div>
+            `;
+            
+            document.getElementById('cash-flow-details').innerHTML = html;
+            createCashFlowChart(projectData, holdingPeriod);
+        }
+
+        function createCashFlowChart(projectData, holdingPeriod) {
+            const ctx = document.getElementById('cashFlowChart');
+            if (!ctx) return;
+            
+            if (cashFlowChart) cashFlowChart.destroy();
+            
+            const labels = [];
+            for (let i = 0; i <= holdingPeriod; i++) {
+                labels.push(`Năm ${i}`);
+            }
+            
+            const datasets = projectData.map((project, index) => {
+                const colors = ['#3b82f6', '#10b981', '#8b5cf6'];
+                return {
+                    label: project.name,
+                    data: project.cashFlows,
+                    borderColor: colors[index],
+                    backgroundColor: colors[index] + '33',
+                    tension: 0.4
+                };
+            });
+            
+            cashFlowChart = new Chart(ctx, {
+                type: 'line',
+                data: { labels, datasets },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: true },
+                        title: { display: true, text: 'Dòng tiền theo Năm' }
+                    },
+                    scales: {
+                        y: {
+                            ticks: { callback: value => value.toFixed(1) + ' tỷ' }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Export to PDF
+        
+        // Investment Comparison Function
+        let comparisonChartInstance = null;
+        
+        function compareInvestments() {
+            console.log('🎯 compareInvestments called');
+            
+            const capital = parseFloat(document.getElementById('comparison-capital').value) || 0;
+            const years = parseInt(document.getElementById('comparison-period').value) || 5;
+            const rateSavings = parseFloat(document.getElementById('rate-savings').value) || 6.0;
+            const rateFund = parseFloat(document.getElementById('rate-fund').value) || 8.5;
+            const rateGold = parseFloat(document.getElementById('rate-gold').value) || 7.0;
+            const rateStock = parseFloat(document.getElementById('rate-stock').value) || 12.0;
+            
+            if (capital <= 0) {
+                alert('Vui lòng nhập số tiền đầu tư hợp lệ!');
+                return;
+            }
+            
+            console.log(`Tính toán: ${capital} tỷ, ${years} năm`);
+            
+            // Calculate future values using compound interest formula: FV = PV * (1 + r)^n
+            const calcFutureValue = (principal, rate, years) => {
+                return principal * Math.pow(1 + rate / 100, years);
+            };
+            
+            // Get Real Estate ROI from calculated projects
+            let realEstateROI = 0;
+            let realEstateFutureValue = capital;
+            
+            if (calculatedProjects && calculatedProjects.length > 0) {
+                // Use average ROI from all calculated projects
+                const avgROI = calculatedProjects.reduce((sum, p) => sum + p.roi, 0) / calculatedProjects.length;
+                realEstateROI = avgROI;
+                realEstateFutureValue = calcFutureValue(capital, avgROI / years, years);
+                console.log(`📊 BĐS ROI từ dự án: ${realEstateROI.toFixed(1)}%`);
+            } else {
+                // Fallback to default if no projects calculated
+                realEstateROI = 12 * years; // Default 12%/year
+                realEstateFutureValue = calcFutureValue(capital, 12, years);
+                console.log('⚠️ Chưa có dự án tính toán, dùng ROI mặc định 12%/năm');
+            }
+            
+            // Calculate for each channel
+            const channels = [
+                {
+                    name: 'Bất Động Sản',
+                    icon: 'fa-home',
+                    rate: realEstateROI / years,
+                    futureValue: realEstateFutureValue,
+                    color: '#ef4444',
+                    isRealEstate: true
+                },
+                {
+                    name: 'Tiết kiệm Ngân hàng',
+                    icon: 'fa-piggy-bank',
+                    rate: rateSavings,
+                    futureValue: calcFutureValue(capital, rateSavings, years),
+                    color: '#3b82f6'
+                },
+                {
+                    name: 'Chứng chỉ Quỹ',
+                    icon: 'fa-certificate',
+                    rate: rateFund,
+                    futureValue: calcFutureValue(capital, rateFund, years),
+                    color: '#10b981'
+                },
+                {
+                    name: 'Vàng',
+                    icon: 'fa-coins',
+                    rate: rateGold,
+                    futureValue: calcFutureValue(capital, rateGold, years),
+                    color: '#f59e0b'
+                },
+                {
+                    name: 'Chứng khoán',
+                    icon: 'fa-chart-line',
+                    rate: rateStock,
+                    futureValue: calcFutureValue(capital, rateStock, years),
+                    color: '#8b5cf6'
+                }
+            ];
+            
+            // Calculate profit and ROI
+            channels.forEach(channel => {
+                channel.profit = channel.futureValue - capital;
+                channel.roi = ((channel.futureValue - capital) / capital * 100);
+            });
+            
+            // Sort by future value descending
+            channels.sort((a, b) => b.futureValue - a.futureValue);
+            
+            console.log('Kết quả:', channels);
+            
+            // Display results
+            let resultsHTML = `
+                <div class="overflow-x-auto">
+                    <table class="min-w-full bg-white border border-gray-300 rounded-lg">
+                        <thead class="bg-indigo-600 text-white">
+                            <tr>
+                                <th class="px-6 py-3 text-left">Xếp hạng</th>
+                                <th class="px-6 py-3 text-left">Kênh Đầu tư</th>
+                                <th class="px-6 py-3 text-right">Lãi suất/năm</th>
+                                <th class="px-6 py-3 text-right">Giá trị sau ${years} năm</th>
+                                <th class="px-6 py-3 text-right">Lợi nhuận</th>
+                                <th class="px-6 py-3 text-right">ROI</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+            
+            const medalIcons = ['🥇', '🥈', '🥉', '4️⃣', '5️⃣'];
+            channels.forEach((channel, index) => {
+                resultsHTML += `
+                    <tr class="border-b hover:bg-gray-50 transition">
+                        <td class="px-6 py-4 text-center text-2xl">${medalIcons[index]}</td>
+                        <td class="px-6 py-4">
+                            <div class="flex items-center">
+                                <i class="fas ${channel.icon} text-2xl mr-3" style="color: ${channel.color};"></i>
+                                <span class="font-semibold">${channel.name}</span>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 text-right font-mono">${channel.rate.toFixed(1)}%</td>
+                        <td class="px-6 py-4 text-right font-bold text-lg" style="color: ${channel.color};">
+                            ${channel.futureValue.toFixed(2)} tỷ
+                        </td>
+                        <td class="px-6 py-4 text-right font-semibold text-green-600">
+                            +${channel.profit.toFixed(2)} tỷ
+                        </td>
+                        <td class="px-6 py-4 text-right font-bold text-blue-600">
+                            ${channel.roi.toFixed(1)}%
+                        </td>
+                    </tr>
+                `;
+            });
+            
+            resultsHTML += `
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="mt-6 p-4 bg-blue-50 border-l-4 border-blue-500 rounded">
+                    <h4 class="font-bold text-lg mb-2"><i class="fas fa-lightbulb mr-2 text-yellow-500"></i>Phân tích:</h4>
+                    <ul class="space-y-2">
+                        <li><strong>Vốn đầu tư ban đầu:</strong> ${capital.toFixed(2)} tỷ VNĐ</li>
+                        <li><strong>Thời gian đầu tư:</strong> ${years} năm</li>
+                        <li><strong>Kênh sinh lời cao nhất:</strong> ${channels[0].name} với ROI ${channels[0].roi.toFixed(1)}%</li>
+                        <li><strong>Chênh lệch cao nhất - thấp nhất:</strong> ${(channels[0].profit - channels[channels.length - 1].profit).toFixed(2)} tỷ VNĐ</li>
+                    </ul>
+                </div>
+                
+                <div class="mt-4 p-4 bg-yellow-50 border-l-4 border-yellow-500 rounded">
+                    <p class="text-sm">
+                        <i class="fas fa-exclamation-triangle mr-2 text-yellow-600"></i>
+                        <strong>Lưu ý:</strong> Đây là tính toán ước tính dựa trên lãi suất/tỷ suất sinh lời giả định. 
+                        Kết quả thực tế có thể khác do biến động thị trường, rủi ro, và các yếu tố khác.
+                    </p>
+                </div>
+            `;
+            
+            document.getElementById('comparison-results-content').innerHTML = resultsHTML;
+            document.getElementById('comparison-results-section').style.display = 'block';
+            
+            console.log('✅ Hiển thị kết quả xong');
+            
+            // Draw comparison chart
+            drawComparisonChart(channels, years);
+        }
+        
+        // Draw Comparison Chart
+        function drawComparisonChart(channels, years) {
+            console.log('📈 Vẽ biểu đồ comparison');
+            
+            const ctx = document.getElementById('comparisonChart');
+            if (!ctx) {
+                console.error('❌ Canvas comparisonChart not found');
+                return;
+            }
+            
+            // Destroy existing chart
+            if (comparisonChartInstance) {
+                comparisonChartInstance.destroy();
+            }
+            
+            const labels = channels.map(c => c.name);
+            const data = channels.map(c => c.futureValue);
+            const colors = channels.map(c => c.color);
+            
+            comparisonChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: `Giá trị sau ${years} năm (tỷ VNĐ)`,
+                        data: data,
+                        backgroundColor: colors,
+                        borderColor: colors.map(c => c + 'dd'),
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: true },
+                        title: {
+                            display: true,
+                            text: 'So sánh Giá trị Đầu tư theo Kênh',
+                            font: { size: 16, weight: 'bold' }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: value => value.toFixed(1) + ' tỷ'
+                            }
+                        }
+                    }
+                }
+            });
+            
+            console.log('✅ Vẽ biểu đồ xong');
+        }
+
+
+        function exportToPDF() {
+            const element = document.body;
+            const opt = {
+                margin: 10,
+                filename: 'Phan_tich_dau_tu_BDS_VuTrongKhai.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2, logging: false },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+            
+            // Hide no-print elements
+            const noPrintElements = document.querySelectorAll('.no-print');
+            noPrintElements.forEach(el => el.style.display = 'none');
+            
+            html2pdf().set(opt).from(element).save().then(() => {
+                noPrintElements.forEach(el => el.style.display = '');
+            });
+        }
+
+        function resetAll() {
+            if (!confirm('Bạn có chắc chắn muốn xóa tất cả dữ liệu?')) return;
+            
+            document.querySelectorAll('input[type="number"], input[type="text"], textarea').forEach(input => {
+                input.value = '';
+            });
+            
+            // Reset defaults
+            document.getElementById('family-capital').value = '0';
+            document.getElementById('holding-period').value = '5';
+            document.getElementById('discount-rate').value = '12';
+            document.getElementById('selling-costs').value = '2';
+            document.getElementById('fixed-loan-rate').value = '8.5';
+            document.getElementById('loan-term-input').value = '30';
+            
+            for (let i = 1; i <= 3; i++) {
+                document.getElementById(`project${i}-other-costs`).value = '0';
+                document.getElementById(`project${i}-conservative-growth`).value = '6';
+                document.getElementById(`project${i}-base-growth`).value = '12';
+                document.getElementById(`project${i}-optimistic-growth`).value = '18';
+                document.getElementById(`project${i}-rental-income`).value = '0';
+                document.getElementById(`project${i}-operating-costs`).value = '0';
+                document.getElementById(`project${i}-total-value`).textContent = '0';
+                document.getElementById(`project${i}-image-preview`).innerHTML = '';
+                projectImages[`project${i}`] = null;
+            }
+            
+            document.getElementById('loan-amount').textContent = '0';
+            document.getElementById('results-container').innerHTML = `
+                <div class="text-center py-12 text-gray-500">
+                    <i class="fas fa-calculator text-6xl mb-4"></i>
+                    <p class="text-xl">Vui lòng nhập thông tin và nhấn "Tính toán & So sánh"</p>
+                </div>
+            `;
+            document.getElementById('cash-flow-section').style.display = 'none';
+            document.getElementById('project-scores-section').style.display = 'none';
+            document.getElementById('recommendations-section').style.display = 'none';
+            document.getElementById('scenario-results').innerHTML = '';
+            document.getElementById('project-images-display').innerHTML = '';
+            calculatedProjects = [];
+        }
     </script>
 </body>
 </html>
